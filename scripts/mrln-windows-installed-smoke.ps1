@@ -18,11 +18,13 @@ $binary = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
 if (-not $binary) {
   # Tauri may include a publisher name or platform architecture in the install directory.
   $roots = @((Join-Path $env:LOCALAPPDATA "Programs"), $env:ProgramFiles)
-  $binary = foreach ($root in $roots) {
+  $found = @()
+  foreach ($root in $roots) {
     if (-not (Test-Path $root)) { continue }
-    Get-ChildItem -Path $root -Filter "mrln-agent-station.exe" -Recurse -File -ErrorAction SilentlyContinue |
-      Select-Object -First 1 -ExpandProperty FullName
-  } | Select-Object -First 1
+    $found += @(Get-ChildItem -Path $root -Filter "mrln-agent-station.exe" -Recurse -File -ErrorAction SilentlyContinue |
+      Select-Object -First 1 -ExpandProperty FullName)
+  }
+  $binary = $found | Select-Object -First 1
 }
 if (-not $binary) { throw "Installed MRLN executable not found" }
 Write-Host "Launching MRLN: $binary"
