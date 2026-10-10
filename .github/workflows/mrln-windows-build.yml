@@ -4,7 +4,7 @@ on:
   push:
     branches: [feature/mrln-animated-crew, feature/mrln-qa-brand-gallery]
   pull_request:
-    branches: [feature/mrln-animated-crew]
+    branches: [feature/mrln-animated-crew, feature/mrln-qa-brand-gallery]
   workflow_dispatch:
 
 permissions:

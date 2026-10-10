@@ -4,6 +4,10 @@ on:
     paths:
       - 'frontend/app/mrln-crew-art.js'
       - 'frontend/app/mrln-materials.js'
+      - 'frontend/app/mrln-sky.js'
+      - 'frontend/app/spacebg.js'
+      - 'frontend/app/backdrop-bake-worker.js'
+      - 'test/mrln-sky.test.js'
       - 'frontend/app/industrialtextures.js'
       - 'test/mrln-materials.test.js'
       - 'test/datareset.test.js'
@@ -14,6 +18,15 @@ on:
       - 'frontend/js/assets.js'
       - 'frontend/app/stationtemplates.js'
       - 'frontend/index.html'
+      - 'frontend/app/app.js'
+      - 'frontend/app/updates.js'
+      - 'test/update-state-parity.test.js'
+      - 'test/mrln-brand-integration.test.js'
+      - 'test/mrln-distribution-gate.test.js'
+      - 'test/mrln-product-claims.test.js'
+      - 'scripts/mrln-release-assets.mjs'
+      - 'test/qa-product-perfect-claims.test.js'
+      - 'test/t5-public-distribution.test.js'
       - 'test/mrln-crew-art.test.js'
       - '.github/workflows/mrln-crew.yml'
   workflow_dispatch:
@@ -32,6 +45,10 @@ jobs:
         run: |
           node test/mrln-crew-art.test.js
           node test/mrln-materials.test.js
+          node test/mrln-sky.test.js
+          node test/mrln-brand-integration.test.js
+          node test/mrln-distribution-gate.test.js
+          node test/mrln-product-claims.test.js
           node test/datareset.test.js
       - name: Inherited media audit (internal report, public release remains blocked)
         run: node scripts/mrln-release-assets.mjs
@@ -48,11 +65,17 @@ jobs:
       - name: JavaScript syntax
         run: |
           node --check scripts/mrln-release-assets.mjs
+          node --check test/mrln-distribution-gate.test.js
+          node --check test/mrln-product-claims.test.js
           node --check frontend/app/mrln-crew-art.js
           node --check frontend/app/mrln-materials.js
+          node --check frontend/app/mrln-sky.js
+          node --check frontend/app/spacebg.js
+          node --check frontend/app/backdrop-bake-worker.js
           node --check frontend/app/industrialtextures.js
           node --check frontend/js/assets.js
           node --check frontend/app/skinstage.js
           node --check frontend/app/agentportraits.js
           node --check frontend/app/app.js
+          node --check frontend/app/updates.js
           node --check frontend/app/stationtemplates.js

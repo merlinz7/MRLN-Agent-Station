@@ -199,9 +199,9 @@ A.ok(/UpdateInstallEvent::Installing[\s\S]*?app\.restart\(\)/.test(mainRs),
 // unrelated apps read the same secrets. Check the identity against the actual bundle id.
 const tauriIdentity = JSON.parse(fs.readFileSync(path.join(__dirname, '../src-tauri/tauri.conf.json'), 'utf8')).identifier;
 if (tauriIdentity === 'com.mrln.agentstation') {
-  A.ok(/const KEYCHAIN_SERVICE: &str = "com\\.mrln\\.agentstation"/.test(credentialsRs),
+  A.ok(credentialsRs.includes('const KEYCHAIN_SERVICE: &str = "com.mrln.agentstation"'),
     'MRLN intentionally uses its own OS keychain service, isolated from StarNet');
-  A.ok(!/const KEYCHAIN_SERVICE: &str = "ai\\.skynet\\.harness"/.test(credentialsRs),
+  A.ok(!credentialsRs.includes('const KEYCHAIN_SERVICE: &str = "ai.skynet.harness"'),
     'MRLN cannot silently read released StarNet credentials');
 } else {
   A.ok(/const KEYCHAIN_SERVICE: &str = "ai\\.skynet\\.harness"/.test(credentialsRs),

@@ -6,7 +6,11 @@ const path = require('node:path');
 const vm = require('node:vm');
 const UpdateCore = require('../frontend/app/updatecore.js');
 
-const source = fs.readFileSync(path.join(__dirname, '../frontend/app/updates.js'), 'utf8') + '\n;globalThis.__Updates = Updates;';
+// Exercise the inherited native updater's fail-closed preparation/restore protocol in a
+// sandbox even though the MRLN product DISABLES auto-updates in production.
+const source = fs.readFileSync(path.join(__dirname, '../frontend/app/updates.js'), 'utf8')
+  .replace('const MANUAL_ONLY = true;', 'const MANUAL_ONLY = false;')
+  + '\n;globalThis.__Updates = Updates;';
 
 function makeCase(opts) {
   const o = opts || {};

@@ -244,7 +244,7 @@ const App = (() => {
     // sidecar/capability/office.js + capgate F1). So the identity must NOT promise web/files unconditionally; it
     // tells the agent to use whatever it's actually been granted and to SAY when a tool is missing (that's the
     // signal that teaches the Commander what to place next), never to pretend a reach it doesn't have.
-    let s = 'You are ' + name + ', an AI agent operating from a workstation aboard the STARNET station — a room '
+    let s = 'You are ' + name + ', an AI agent operating from a workstation aboard MRLN Agent Station — a room '
       + 'your Commander (the user) is building for you. Address the user as "Commander" and keep a spark of personality. '
       + 'Your workstation grants you REAL tools — exactly the ones the Commander has placed in your room (web search/read, '
       + 'file read/write, a terminal, memory, and more as the station grows; compute to think is always yours). When the '
@@ -328,15 +328,16 @@ const App = (() => {
   // earlier open-source runtimes the harness was built on. Without this grounding it guesses one of those. Truthful-
   // telemetry law: state only what's true (StarNet harness, Commander's own model), don't guess.
   function foundationClause() {
-    return '\n\nYOUR FOUNDATION: You run on the StarNet harness — a local-first agent runtime on the Commander\'s own '
-      + 'machine, not a hosted service. Your reasoning comes from whichever model the Commander has connected through '
-      + 'their own API key or account. As you look around your environment you may meet names that are not you, and '
-      + 'none of them change what you are: StarNet was previously called "Skynet" — it has been renamed, but some file '
-      + 'paths, environment variables, and config keys may still carry the old "Skynet"/"SKYNET_" name as a back-compat '
-      + 'alias; and because the harness was assembled from and built on earlier open-source agent runtimes, some code, '
-      + 'comments, or tool names may reference other projects. You are a StarNet agent on the StarNet harness — not a '
-      + 'Skynet agent, and not whatever those internal references happen to name. Do not guess at your own foundation '
-      + 'from ambiguous signals in the environment; report only what you can actually verify, and say plainly when you are not sure.';
+    return '\n\nYOUR FOUNDATION: You are an AI agent operating inside MRLN Agent Station, a local-first '
+      + 'desktop application developed as a fork of the open-source StarNet agent runtime. '
+      + 'The application runs on the Commander\'s own computer. Your reasoning comes from the model provider the '
+      + 'Commander has connected, through their own local model, API key or authorized account. '
+      + 'MRLN Agent Station is the application identity; StarNet is the upstream runtime lineage, not '
+      + 'an MRLN-hosted subscription or a different AI identity. Some inherited file paths, configuration '
+      + 'keys, tool identifiers and comments still mention StarNet, Skynet or SKYNET_ for compatibility. '
+      + 'Those labels do not mean you are running under another product name or using another provider. '
+      + 'Do not infer permissions or tools from the branding: only claim actual capabilities shown in '
+      + 'your live runtime briefing, and say plainly when a capability is unavailable.';
   }
   // the orchestrator's CREW POSTURE — derived fresh each compose like approvalClause/foundationClause, never
   // stored in the editable identity.md (so it can't be edited away and never freezes stale). States only what
@@ -5208,6 +5209,29 @@ const App = (() => {
     const msg = el('future-msg');
     const btn = el('btn-future-update');
     const hasUpdater = (typeof Updates !== 'undefined') && (typeof window !== 'undefined' && window.__TAURI__ && window.__TAURI__.core);
+    // MRLN is a separate fork with its native auto-updater disabled. Never send users
+    // to StarNet's updater feed or claim that StarNet will update their MRLN save.
+    if (true /* MRLN fork build: updater disabled in src-tauri/tauri.conf.json */) {
+      const buildsUrl = 'https://github.com/merlinz7/MRLN-Agent-Station/actions/workflows/mrln-windows-build.yml';
+      if (msg) msg.textContent = 'This MRLN test build does not support automatic updates. Open the MRLN GitHub Windows builds and install a newer MRLN version; your current save stays untouched.';
+      if (btn) {
+        btn.textContent = 'VIEW MRLN TEST BUILDS ↗';
+        btn.onclick = () => {
+          try { if (typeof SFX !== 'undefined' && SFX.click) SFX.click(); } catch (_) {}
+          const invoke = window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke;
+          if (invoke) {
+            Promise.resolve(invoke('open_external_url', { url: buildsUrl })).catch(() => {
+              if (msg) msg.textContent = 'Open this MRLN build page in your browser: ' + buildsUrl;
+            });
+          } else {
+            window.open(buildsUrl, '_blank', 'noopener,noreferrer');
+          }
+        };
+      }
+      show('screen-future');
+      return;
+    }
+
     // #91: Updates.install() PAUSES by RETURNING its snapshot (a failed pre-update recovery point, an unverified save,
     // an agent still working) instead of throwing, and the Update Center is unreachable from this gate. Name the pause
     // here; when the in-app path failed, offer the full installer beside UPDATE STARNET (reinstalling keeps the station).

@@ -12,6 +12,11 @@ const ROOT = path.resolve(__dirname, '..');
 const script = path.join(ROOT, 'scripts', 't5-public-distribution.mjs');
 const lint = path.join(ROOT, 'scripts', 'lint-evidence-secrets.mjs');
 const TAURI_CONF = JSON.parse(fs.readFileSync(path.join(ROOT, 'src-tauri', 'tauri.conf.json'), 'utf8'));
+// Public StarNet signed-release fixtures are meaningful only on upstream's actual feed.
+// For MRLN, require a separate independently gated release-rights audit instead.
+if (TAURI_CONF.identifier === 'com.mrln.agentstation') {
+  require('./mrln-distribution-gate.test.js');
+} else {
 const APP_VERSION = TAURI_CONF.version;
 // The updater endpoint is the single source of truth; the T5 hosting proof compares the
 // evidence's latestJsonUrl against it. Derive the installer asset URL from the same channel
@@ -292,3 +297,5 @@ try {
 }
 
 console.log('t5-public-distribution.test: OK (35 assertions)');
+
+}

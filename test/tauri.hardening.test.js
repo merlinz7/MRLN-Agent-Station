@@ -12,7 +12,14 @@ const indexJs = fs.readFileSync(path.join(root, 'sidecar', 'index.js'), 'utf8');
 const browserJs = fs.readFileSync(path.join(root, 'sidecar', 'tools', 'builtin', 'browser.js'), 'utf8');
 const cargoToml = fs.readFileSync(path.join(root, 'src-tauri', 'Cargo.toml'), 'utf8');
 
-A.eq(conf.bundle && conf.bundle.publisher, 'Andrew Sims', 'Windows package publisher matches the release signing identity instead of leaking the legacy identifier');
+// Upstream signed StarNet releases and unsigned MRLN internal builds have distinct identities.
+const mrlnFork=conf.identifier==='com.mrln.agentstation';
+A.eq(conf.bundle && conf.bundle.publisher, mrlnFork ? 'MRLN Agent Station' : 'Andrew Sims',
+  'Windows package publisher matches the actual product identity');
+if(mrlnFork){
+  A.eq(conf.bundle.createUpdaterArtifacts,false,'MRLN internal builds do not emit upstream update artifacts');
+  A.eq(conf.plugins?.updater?.endpoints?.length,0,'MRLN must not use upstream StarNet updater endpoints');
+}
 A.ok(!cargoToml.includes('???'), 'desktop package metadata contains no corrupted placeholder punctuation');
 
 const csp = String(conf.app && conf.app.security && conf.app.security.csp || '');

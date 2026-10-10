@@ -10,6 +10,12 @@ const A = require('./_assert.js');
 
 const TEST_ONLY_LEDGER_OVERRIDE = 'TEST_ONLY_UNCOMMITTED_LEDGER_FIXTURE';
 
+// The upstream 37-claim public-release ledger pins the upstream source tree.
+// For a distinct MRLN fork, run its independent, fail-closed claim inventory.
+const mrlnIdentity = JSON.parse(fs.readFileSync(path.join(__dirname, '../src-tauri/tauri.conf.json'), 'utf8')).identifier;
+if (mrlnIdentity === 'com.mrln.agentstation') {
+  require('./mrln-product-claims.test.js');
+} else {
 (async () => {
   const {
     buildReleaseSurface,
@@ -225,3 +231,5 @@ const TEST_ONLY_LEDGER_OVERRIDE = 'TEST_ONLY_UNCOMMITTED_LEDGER_FIXTURE';
   console.error(error && error.stack || error);
   process.exit(1);
 });
+
+}
