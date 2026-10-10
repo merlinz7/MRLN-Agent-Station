@@ -21,6 +21,7 @@ const SkinStage = (() => {
   // the frames to play for a set: prefer the south-facing walk cycle, fall back to the idle
   // rotation, then the bare still — straight from the manifest, so the demo matches the floor.
   function frameList(set) {
+    if (typeof MRLNCrewArt !== 'undefined' && MRLNCrewArt.isOriginalSet(set)) return MRLNCrewArt.frameURLs(set,'walk','south');
     const m = manifest && manifest.sprites;
     const walk = m && m[set + '.walk.south'];
     const rot  = m && m[set + '.rot.south'];
