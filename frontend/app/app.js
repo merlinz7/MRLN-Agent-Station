@@ -5209,6 +5209,29 @@ const App = (() => {
     const msg = el('future-msg');
     const btn = el('btn-future-update');
     const hasUpdater = (typeof Updates !== 'undefined') && (typeof window !== 'undefined' && window.__TAURI__ && window.__TAURI__.core);
+    // MRLN is a separate fork with its native auto-updater disabled. Never send users
+    // to StarNet's updater feed or claim that StarNet will update their MRLN save.
+    if (true /* MRLN fork build: updater disabled in src-tauri/tauri.conf.json */) {
+      const buildsUrl = 'https://github.com/merlinz7/MRLN-Agent-Station/actions/workflows/mrln-windows-build.yml';
+      if (msg) msg.textContent = 'This MRLN test build does not support automatic updates. Open the MRLN GitHub Windows builds and install a newer MRLN version; your current save stays untouched.';
+      if (btn) {
+        btn.textContent = 'VIEW MRLN TEST BUILDS ↗';
+        btn.onclick = () => {
+          try { if (typeof SFX !== 'undefined' && SFX.click) SFX.click(); } catch (_) {}
+          const invoke = window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke;
+          if (invoke) {
+            Promise.resolve(invoke('open_external_url', { url: buildsUrl })).catch(() => {
+              if (msg) msg.textContent = 'Open this MRLN build page in your browser: ' + buildsUrl;
+            });
+          } else {
+            window.open(buildsUrl, '_blank', 'noopener,noreferrer');
+          }
+        };
+      }
+      show('screen-future');
+      return;
+    }
+
     // #91: Updates.install() PAUSES by RETURNING its snapshot (a failed pre-update recovery point, an unverified save,
     // an agent still working) instead of throwing, and the Update Center is unreachable from this gate. Name the pause
     // here; when the in-app path failed, offer the full installer beside UPDATE STARNET (reinstalling keeps the station).
