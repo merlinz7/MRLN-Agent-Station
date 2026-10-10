@@ -2,7 +2,7 @@ name: MRLN Windows internal test installer
 
 on:
   push:
-    branches: [feature/mrln-animated-crew]
+    branches: [feature/mrln-animated-crew, feature/mrln-qa-brand-gallery]
   pull_request:
     branches: [feature/mrln-animated-crew]
   workflow_dispatch:

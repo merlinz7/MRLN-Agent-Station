@@ -14,9 +14,25 @@ const MRLNCrewArt = (() => {
     { id:'mrln_echo',  set:'mrln_echo',  name:'Echo · Archive',    suit:'#9b9950', trim:'#f1eea2', light:'#e9ed91', dark:'#4a564c', badge:'#a0e5ff', kit:'scribe' },
     { id:'mrln_relay', set:'mrln_relay', name:'Relay · Comms',     suit:'#4a8caa', trim:'#e0f5ff', light:'#8bdcff', dark:'#25416e', badge:'#aaf9e5', kit:'antenna' }
   ]);
+  // Every archetype has four actual outfit silhouettes; variant keys are persisted as skins.
+  // This stays a selectable art catalog, not a random-color CSS filter over identical poses.
+  const OUTFITS = Object.freeze([
+    { id:'vanguard', name:'Vanguard', colors:{suit:'#536986',trim:'#e4f4ff',light:'#75cffa',dark:'#273a58',badge:'#fdc582'} },
+    { id:'specter', name:'Specter', colors:{suit:'#38415e',trim:'#bcabf7',light:'#79e5eb',dark:'#171f38',badge:'#f0a3dc'} },
+    { id:'explorer', name:'Explorer', colors:{suit:'#827a65',trim:'#e7c8a4',light:'#a5eada',dark:'#393d42',badge:'#fad278'} }
+  ]);
+  const VARIANT_CHARACTERS = Object.freeze(CHARACTERS.flatMap(c => OUTFITS.map(outfit => Object.freeze({
+    ...c,
+    id:c.id+'_'+outfit.id,
+    set:c.set+'_'+outfit.id,
+    name:c.name+' / '+outfit.name,
+    variant:outfit.id,
+    ...outfit.colors
+  }))));
+  const ALL_CHARACTERS = Object.freeze([...CHARACTERS, ...VARIANT_CHARACTERS]);
   const DIRECTIONS = Object.freeze(['south','south-east','east','north-east','north','north-west','west','south-west']);
   const cache = new Map();
-  const bySet = new Map(CHARACTERS.map(c => [c.set,c]));
+  const bySet = new Map(ALL_CHARACTERS.map(c => [c.set,c]));
   const r = (x,y,w,h,fill) => '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+fill+'"/>';
   const poly = (pts,fill) => '<polygon points="'+pts+'" fill="'+fill+'"/>';
   function sprite(c, action, direction, frame) {
@@ -25,13 +41,13 @@ const MRLNCrewArt = (() => {
     const away = direction.includes('north');
     const diag = side && (direction.includes('south') || direction.includes('north'));
     const profile = side && !diag;
-    const idleBlink = action === 'blink' || (action === 'rot' && frame === 1);
+    const idleBlink = action === 'blink';
     const moving = action === 'walk';
     const typing = action === 'type';
     const sitting = action === 'sit' || typing;
     const talking = action === 'talk';
-    const stride = moving ? [-3,-1,2,0][frame % 4] : 0;
-    const bob = moving ? [0,1,0,-1][frame % 4] : 0;
+    const stride = moving ? [-3,-2,-1,1,3,2,1,-1][frame % 8] : 0;
+    const bob = moving ? [0,-1,0,1,0,-1,0,1][frame % 8] : (action === 'rot' && frame % 2 ? -1 : 0);
     const wave = talking && frame % 2 ? 3 : 0;
     const y0 = bob;
     const o = [];
@@ -117,6 +133,24 @@ const MRLNCrewArt = (() => {
     if (c.kit === 'prism') {o.push(poly('32,14 27,19 37,19',c.light));add(31,15,2,2,metal);}
     if (c.kit === 'scribe') {add(28,17,8,2,c.badge);add(29,15,6,2,trim);}
     if (c.kit === 'antenna') {add(30,15,4,3,c.badge);add(31,16,2,1,metal);}
+    // These additions change outlines and equipment silhouettes, not only suit colors.
+    if (c.variant === 'vanguard') {
+      add(10,28,6,19,line);add(11,29,4,13,c.trim);
+      add(49,28,6,19,line);add(50,29,4,13,c.trim);
+      add(23,39,18,5,c.dark);add(27,39,10,3,c.badge);
+      add(26,51,4,8,c.trim);add(35,51,4,8,c.trim);
+    } else if (c.variant === 'specter') {
+      add(16,17,5,15,c.trim);add(43,17,5,15,c.trim);
+      add(13,19,4,8,c.light);add(47,19,4,8,c.light);
+      add(25,5,14,3,line);add(27,6,10,2,c.light);
+      add(27,43,10,3,c.trim);
+    } else if (c.variant === 'explorer') {
+      add(15,14,34,4,line);add(17,15,30,2,c.badge);
+      add(23,10,18,6,c.dark);add(25,12,14,3,c.trim);
+      add(15,38,8,9,c.dark);add(16,40,5,6,c.badge);
+      add(41,38,8,9,c.dark);add(43,40,4,6,c.badge);
+      add(27,45,10,3,c.trim);
+    }
     return '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 64 64" shape-rendering="crispEdges"><title>'+c.name+'</title>'+o.join('')+'</svg>';
   }
   function frameURLs(set, action, dir) {
@@ -125,7 +159,7 @@ const MRLNCrewArt = (() => {
     const state = ['rot','walk','blink','sit','talk','type'].includes(action) ? action : 'rot';
     const key = set+'.'+state+'.'+dir;
     if (cache.has(key)) return cache.get(key);
-    const n = state === 'walk' ? 4 : 2;
+    const n = state === 'walk' ? 8 : 2;
     const urls = Object.freeze(Array.from({length:n},(_,i) =>
       'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(sprite(c,state,dir,i))));
     cache.set(key,urls);
@@ -134,7 +168,7 @@ const MRLNCrewArt = (() => {
   function still(set) { return frameURLs(set,'rot','south')[0] || ''; }
   function register() {
     if (typeof DATA === 'undefined' || !DATA.SKINS) return;
-    for (const c of CHARACTERS) {
+    for (const c of ALL_CHARACTERS) {
       DATA.SKINS[c.id] = { name:c.name, set:c.set, scale:0.26, sourceStandingHeight:103, originalArt:true };
     }
     DATA.DEFAULT_SKIN = 'mrln_nova';
@@ -142,7 +176,7 @@ const MRLNCrewArt = (() => {
   function install(manifest) {
     if (!manifest || typeof manifest !== 'object') return false;
     if (!manifest.sprites || typeof manifest.sprites !== 'object') manifest.sprites = {};
-    for (const c of CHARACTERS) {
+    for (const c of ALL_CHARACTERS) {
       for (const dir of DIRECTIONS) {
         for (const state of ['rot','walk','blink','sit','talk','type'])
           manifest.sprites[c.set+'.'+state+'.'+dir] = frameURLs(c.set,state,dir);
@@ -151,8 +185,8 @@ const MRLNCrewArt = (() => {
     return true;
   }
   register();
-  const api = { CHARACTERS, DIRECTIONS, skinIds:Object.freeze(CHARACTERS.map(c=>c.id)), register, install, frameURLs, still,
-    isOriginalSet:set=>bySet.has(set), isOriginalSkin:id=>CHARACTERS.some(c=>c.id===id) };
+  const api = { CHARACTERS:ALL_CHARACTERS, BASE_CHARACTERS:CHARACTERS, DIRECTIONS, skinIds:Object.freeze(ALL_CHARACTERS.map(c=>c.id)), register, install, frameURLs, still,
+    isOriginalSet:set=>bySet.has(set), isOriginalSkin:id=>ALL_CHARACTERS.some(c=>c.id===id) };
   return Object.freeze(api);
 })();
 if (typeof module !== 'undefined' && module.exports) module.exports = MRLNCrewArt;
