@@ -1,7 +1,7 @@
 name: MRLN real-station visual proof
 on:
   pull_request:
-    branches: [fix/mrln-installed-windows-proof, feature/mrln-qa-brand-gallery]
+    branches: [fix/mrln-installed-windows-proof, feature/mrln-qa-brand-gallery, fix/mrln-provider-onboarding]
   workflow_dispatch:
 
 permissions:
