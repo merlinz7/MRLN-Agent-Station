@@ -6,6 +6,9 @@ on:
       - 'frontend/app/mrln-materials.js'
       - 'frontend/app/industrialtextures.js'
       - 'test/mrln-materials.test.js'
+      - 'test/datareset.test.js'
+      - 'frontend/app/datareset.js'
+      - 'src-tauri/src/erase_all.rs'
       - 'frontend/app/skinstage.js'
       - 'frontend/app/agentportraits.js'
       - 'frontend/js/assets.js'
@@ -29,6 +32,7 @@ jobs:
         run: |
           node test/mrln-crew-art.test.js
           node test/mrln-materials.test.js
+          node test/datareset.test.js
       - name: JavaScript syntax
         run: |
           node --check frontend/app/mrln-crew-art.js
