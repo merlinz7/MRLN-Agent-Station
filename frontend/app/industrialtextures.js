@@ -77,6 +77,12 @@ const IndustrialTextures = (() => {
     return count;
   }
   const ready = requested && typeof Image !== 'undefined' ? Promise.all([...names, ...shellNames, ...surfaceNames].map(name => new Promise(resolve => {
+    const custom = typeof MRLNMaterials !== 'undefined' ? MRLNMaterials.build(name) : null;
+    if (custom) {
+      try { originals[name] = custom; images[name] = paintOriginal(name, custom); }
+      catch (_) { failed.push(name); }
+      resolve(); return;
+    }
     const img = new Image();
     img.onload = () => {
       try {
