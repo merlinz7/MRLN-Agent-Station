@@ -22,7 +22,8 @@ const AgentPortraits = (() => {
         resolve(out.toDataURL());
       };
       source.onerror = () => { cache.delete(set); resolve(null); };
-      source.src = 'assets/sprites/' + set + '/rot_south.png';
+      source.src = (typeof MRLNCrewArt !== 'undefined' && MRLNCrewArt.isOriginalSet(set))
+        ? MRLNCrewArt.still(set) : 'assets/sprites/' + set + '/rot_south.png';
     });
     cache.set(set, promise); return promise;
   }
