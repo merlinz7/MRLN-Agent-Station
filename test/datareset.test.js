@@ -128,7 +128,7 @@ function fakeWindow() {
     A.ok(/stop_sidecar_gracefully\(st\)[\s\S]{0,400}set_aside_for_erase/.test(main), 'the sidecar (and its station browser) stops before any file moves');
     A.ok(main.includes('erase_all::remove_all(&targets)') && main.includes('window.clear_all_browsing_data()'), 'deletion + WebView storage clear are both wired');
     A.ok(/!path\.starts_with\(&install_root\)/.test(main), 'the install folder (and its bundled seed) is never an erase target');
-    A.ok(/fn is_starnet_owned/.test(erase) && /refused: not a MRLN-owned location/.test(erase) && /com\\.mrln\\.agentstation/.test(erase),
+    A.ok(/fn is_starnet_owned/.test(erase) && /refused: not a MRLN-owned location/.test(erase) && /com\.mrln\.agentstation/.test(erase),
       'every erase target is bounded to MRLN app-owned storage, not any StarNet location');
     A.ok(/DataReset\.mountErase\(el\)/.test(ui) && /DataReset\.mountBrowserReset\(el\)/.test(ui), 'both doors are mounted in Settings');
     A.ok(html.includes('<script src="app/datareset.js"></script>'), 'the module loads');
