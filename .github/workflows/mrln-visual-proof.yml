@@ -1,13 +1,15 @@
 name: MRLN real-station visual proof
 on:
-  push:
-    branches: [feature/mrln-qa-brand-gallery] 
   pull_request:
     branches: [fix/mrln-installed-windows-proof]
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: mrln-visual-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   station-screenshot:
@@ -33,6 +35,28 @@ jobs:
           printf '#!/bin/sh\nexec %s --no-sandbox --disable-dev-shm-usage "$@"\n' "$CHROME" | sudo tee "$WRAP" >/dev/null
           sudo chmod +x "$WRAP"
           echo "SKYNET_CHROME=$WRAP" >> "$GITHUB_ENV"
+
+      - name: Warm Chromium CDP before real screenshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$SKYNET_CHROME" --headless=new --no-first-run --remote-debugging-port=9388 \
+            --user-data-dir="$RUNNER_TEMP/mrln-chrome-warmup" about:blank \
+            > "$RUNNER_TEMP/mrln-chrome-warmup.log" 2>&1 &
+          PID=$!
+          ready=""
+          for i in $(seq 1 120); do
+            if curl -fsS http://127.0.0.1:9388/json/list >/dev/null 2>&1; then ready=1; break; fi
+            if ! kill -0 "$PID" 2>/dev/null; then break; fi
+            sleep 0.25
+          done
+          if [ -z "$ready" ]; then
+            cat "$RUNNER_TEMP/mrln-chrome-warmup.log"
+            kill "$PID" 2>/dev/null || true
+            exit 1
+          fi
+          kill "$PID" 2>/dev/null || true
+          wait "$PID" 2>/dev/null || true
 
       - name: Capture actual running station (not a concept image)
         env:
