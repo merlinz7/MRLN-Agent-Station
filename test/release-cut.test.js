@@ -22,19 +22,35 @@ const result = spawnSync(process.execPath, [
   '--no-pre-build-ctor'
 ], { cwd: ROOT, encoding: 'utf8', env: Object.assign({}, process.env, { STARNET_UPDATER_KEY_FILE: keyFile }) });
 
-assert.equal(result.status, 0, result.stderr || result.stdout);
 const output = result.stdout + result.stderr;
-assert.match(output, /desktop:build .*explicit updater signing follows/i);
-assert.match(output, /--config .*release-unsigned-updater\.conf\.json/i);
-assert.match(output, /signer sign --private-key-path .*starnet-updater\.key --password=/i);
-assert.doesNotMatch(output, /TAURI_SIGNING_PRIVATE_KEY\s*=/,
-  'the release cutter must not put raw private-key contents in its command output');
-assert.match(output, new RegExp('package\\.json version\\s+: ' + versionPattern),
-  'preflight proves the public package version instead of checking only Tauri/Cargo');
-assert.match(output, new RegExp('package-lock version\\s+: ' + versionPattern + ' \\(root ' + versionPattern + '\\)'),
-  'preflight proves both package-lock version pins');
-assert.match(output, new RegExp('Cargo\\.lock version\\s+: ' + versionPattern),
-  'preflight proves the app package pin in Cargo.lock');
+const tauriConf = JSON.parse(readFileSync(join(ROOT, 'src-tauri', 'tauri.conf.json'), 'utf8'));
+const isMrlnFork = tauriConf.identifier === 'com.mrln.agentstation';
+if (isMrlnFork) {
+  // The upstream release cutter MUST fail closed when pointed at the independent
+  // MRLN fork. This product has neither an upstream update endpoint nor consent
+  // to distribute an installer signed by the upstream updater key.
+  assert.equal(tauriConf.productName, 'MRLN Agent Station');
+  assert.equal(tauriConf.bundle.createUpdaterArtifacts, false);
+  assert.deepEqual(tauriConf.plugins.updater.endpoints, []);
+  assert.notEqual(result.status, 0, 'upstream StarNet release cutter must reject MRLN');
+  assert.match(output, /bundle\.createUpdaterArtifacts is false/,
+    'upstream cutter refuses to sign/publish MRLN with inherited StarNet credentials');
+  assert.doesNotMatch(output, /would run:.*(?:signer sign|desktop:build)/,
+    'upstream release cutter may not reach build or signing steps on MRLN');
+} else {
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(output, /desktop:build .*explicit updater signing follows/i);
+  assert.match(output, /--config .*release-unsigned-updater\.conf\.json/i);
+  assert.match(output, /signer sign --private-key-path .*starnet-updater\.key --password=/i);
+  assert.doesNotMatch(output, /TAURI_SIGNING_PRIVATE_KEY\s*=/,
+    'the release cutter must not put raw private-key contents in its command output');
+  assert.match(output, new RegExp('package\\.json version\\s+: ' + versionPattern),
+    'preflight proves the public package version instead of checking only Tauri/Cargo');
+  assert.match(output, new RegExp('package-lock version\\s+: ' + versionPattern + ' \\(root ' + versionPattern + '\\)'),
+    'preflight proves both package-lock version pins');
+  assert.match(output, new RegExp('Cargo\\.lock version\\s+: ' + versionPattern),
+    'preflight proves the app package pin in Cargo.lock');
+}
 
 const source = readFileSync(join(ROOT, 'scripts', 'release-cut.mjs'), 'utf8');
 assert.match(source, /TAURI_SIGNING_PRIVATE_KEY:\s*null/,
