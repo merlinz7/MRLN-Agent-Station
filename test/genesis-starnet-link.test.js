@@ -12,13 +12,21 @@ const app = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'app.j
 const stationui = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'stationui.js'), 'utf8');
 const host = fs.readFileSync(path.join(__dirname, '..', 'sidecar', 'index.js'), 'utf8');
 const link = fs.readFileSync(path.join(__dirname, '..', 'sidecar', 'credits-link.js'), 'utf8');
+const appId = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'src-tauri', 'tauri.conf.json'), 'utf8')).identifier;
+const isMrln = appId === 'com.mrln.agentstation';
 
 let n = 0;
 const ok = (cond, msg) => { assert.ok(cond, msg); n++; };
 
 // STARNET is THE HERO (the promoted easiest start) and ships HIDDEN — only the live probe reveals it.
 ok(/class="prov prov-hero hidden" data-prov="starnet"/.test(index), 'the STARNET hero ships hidden (honesty: no cloud, no offer)');
-ok(/data-prov="starnet"[\s\S]{0,600}Subscribe and start\. No API keys\./.test(index), 'the STARNET hero clearly explains the simple subscription path');
+if (isMrln) {
+  ok(/data-prov="starnet"[\s\S]{0,700}A third-party StarNet account, not an MRLN subscription\./.test(index),
+    'MRLN labels the external StarNet provider as third-party rather than a MRLN plan');
+} else {
+  ok(/data-prov="starnet"[\s\S]{0,600}Subscribe and start\. No API keys\./.test(index),
+    'upstream StarNet explains its own subscription path');
+}
 // ChatGPT/Codex has no chip of its own anymore — its sign-in lives inside the OPENAI card.
 ok(!/data-prov="codex"/.test(index), 'no standalone codex chip — ChatGPT sign-in lives inside the OPENAI selection');
 ok(/pickedProvider === 'codex'\) pickedProvider = 'openai'/.test(app), 'a returning codex agent lands on the OPENAI card');
@@ -35,7 +43,13 @@ ok(/async function revealStarnetGenesis\(/.test(app), 'genesis probes the cloud 
 ok(/\/api\/credits\/linkable/.test(app), 'the reveal asks /api/credits/linkable (the STORE reads the same pair)');
 // (2026-10-08) it may pass its own wait (api.get's 15s default lost to a ~16s link self-heal) — RUN in credits-status-wait.test.js
 ok(/async function revealStarnetGenesis\([\s\S]{0,400}?Harness\.api\.get\('\/api\/credits\?history=0'(?:, \{ timeoutMs: \d+ \})?\)/.test(app), 'the reveal uses the bounded summary endpoint and cannot be stalled by history');
-ok(/revealStarnetGenesis\(!recovery\)/.test(app), 'the connect screen actually runs the reveal (auto-pick only on a fresh create)');
+if (isMrln) {
+  ok(/revealStarnetGenesis\(false\)/.test(app) && !/revealStarnetGenesis\(!recovery\)/.test(app),
+    'MRLN can reveal third-party StarNet only for explicit selection, never automatic promotion');
+} else {
+  ok(/revealStarnetGenesis\(!recovery\)/.test(app),
+    'upstream connect screen reveals its promoted subscription on fresh create');
+}
 
 // The pairing flow rides the SAME sidecar engine as the STORE — one implementation.
 ok(/\/api\/credits\/link\/start/.test(app) && /\/api\/credits\/link\/poll/.test(app),
