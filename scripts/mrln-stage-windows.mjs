@@ -102,8 +102,9 @@ delete conf.bundle.windows.nsis.installerHooks;
 const cargoPath=path.join(tauri,'Cargo.toml');
 const cargo=fs.readFileSync(cargoPath,'utf8');
 const rewritten=cargo.replace(/^name\s*=\s*"skynet-desktop"/m,'name = "mrln-agent-station"');
-if(rewritten===cargo)throw new Error('could not isolate the StarNet executable name');
-fs.writeFileSync(cargoPath,rewritten);
+if(!/^name\s*=\s*"mrln-agent-station"/m.test(rewritten))
+  throw new Error('MRLN native executable name missing');
+if(rewritten!==cargo)fs.writeFileSync(cargoPath,rewritten);
 
 fs.writeFileSync(confpath,JSON.stringify(conf,null,2)+'\n');
 const assert=JSON.parse(fs.readFileSync(confpath,'utf8'));
