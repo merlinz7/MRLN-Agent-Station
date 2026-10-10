@@ -43,6 +43,12 @@ jobs:
         run: |
           node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('.uishots-mrln/manifest.json'));if(!p.ready||p.activeScreen!=='screen-game'||p.states.filter(x=>!x.ok).length||p.exceptions.length||!fs.existsSync('.uishots-mrln/ingame.png'))process.exit(1);console.log('MRLN live station screenshot verified');"
 
+      - name: Capture full five-sector MRLN Agent Studio
+        env:
+          MRLN_PROOF_PORT: '8971'
+          MRLN_CDP_PORT: '9371'
+        run: node scripts/mrln-five-sector-proof.mjs
+
       - name: Upload actual rendered screenshot, receipt and console evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -51,5 +57,7 @@ jobs:
           path: |
             .uishots-mrln/ingame.png
             .uishots-mrln/manifest.json
+            .uishots-mrln-multi/five-sector.png
+            .uishots-mrln-multi/five-sector.json
           if-no-files-found: warn
           retention-days: 7
