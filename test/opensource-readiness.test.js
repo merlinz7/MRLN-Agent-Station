@@ -18,8 +18,23 @@ assert.equal(lock.version, pkg.version, 'package-lock top-level version must agr
 assert.equal(lock.packages[''].version, pkg.version, 'package-lock root package version must agree');
 assert.equal(pkg.license, 'MIT');
 assert.equal(pkg.private, true, 'prevent accidental npm publication; GitHub visibility is independent');
-assert.match(pkg.repository.url, /github\.com\/androoAGI\/starnet(?:\.git)?$/,
-  'repository URL must point at the renamed public source repo (starnet)');
+// A genuine open-source fork must identify its OWN public code repository, while
+// separately preserving provenance and MIT notices for the original StarNet engine.
+if (tauri.identifier === 'com.mrln.agentstation') {
+  assert.match(pkg.repository.url, /^git\+https:\/\/github\.com\/merlinz7\/MRLN-Agent-Station(?:\.git)?$/,
+    'MRLN package repository points to the MRLN-owned public source');
+  assert.match(pkg.homepage || '', /github\.com\/merlinz7\/MRLN-Agent-Station/,
+    'MRLN project homepage points to its own repository');
+  assert.match(pkg.description || '', /StarNet/,
+    'MRLN description clearly attributes the upstream StarNet engine');
+  assert.match(read('README.md'), /StarNet.*fork|fork.*StarNet/i,
+    'MRLN README identifies the fork and source provenance');
+  assert.match(read('NOTICE.md'), /StarNet|Andrew Sims/,
+    'MRLN retains upstream attribution in NOTICE.md');
+} else {
+  assert.match(pkg.repository.url, /github\.com\/androoAGI\/starnet(?:\.git)?$/,
+    'upstream repository URL must point at the StarNet public source');
+}
 
 for (const required of [
   'LICENSE', 'README.md', 'CONTRIBUTING.md', 'CODE_OF_CONDUCT.md', 'SECURITY.md',
