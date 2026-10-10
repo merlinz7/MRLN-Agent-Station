@@ -10,7 +10,9 @@ const Updates = (() => {
   // ALL user data (workspaces live in Application Support; localStorage/IndexedDB in the WebView
   // store keyed by the unchanged bundle id — both OUTSIDE the app bundle the installer replaces).
   // Kept in sync with tauri.conf.json plugins.updater.endpoints[0] (same repo, /releases/latest).
-  const RELEASES_PAGE = 'https://github.com/merlinz7/MRLN-Agent-Station/releases';
+  const RELEASES_PAGE = 'https://github.com/merlinz7/MRLN-Agent-Station/actions/workflows/mrln-windows-build.yml';
+  // This development fork has no public signed updater. No automatic checks or installs.
+  const MANUAL_ONLY = true;
   const CORE = (typeof UpdateCore !== 'undefined') ? UpdateCore : null;
   const TAURI = (typeof window !== 'undefined' && window.__TAURI__ && window.__TAURI__.core) ? window.__TAURI__.core : null;
   const invoke = (cmd, args) => TAURI.invoke(cmd, args || {});
@@ -75,6 +77,7 @@ const Updates = (() => {
     opts = opts || {};
     notify = typeof opts.notify === 'function' ? opts.notify : notify;
     rerender = typeof opts.rerender === 'function' ? opts.rerender : rerender;
+    if (MANUAL_ONLY) { state.desktop = false; state.phase = 'unsupported'; emit(); return snapshot(); }
     await refreshStatus();
     runLoop('startup');
   }
@@ -138,6 +141,7 @@ const Updates = (() => {
   }
 
   async function check(manual, reason) {
+    if (MANUAL_ONLY) { state.phase = 'unsupported'; if (manual) notify('MRLN test builds are installed manually from GitHub Actions', 'warn'); emit(); return snapshot(); }
     if (!TAURI || !CORE || busy) return snapshot();
     busy = true;
     state.phase = 'checking';
@@ -251,6 +255,7 @@ const Updates = (() => {
   }
 
   async function install(opts) {
+    if (MANUAL_ONLY) { notify('Automatic installation is disabled for MRLN test builds', 'warn'); return snapshot(); }
     opts = opts || {};
     if (!TAURI || !CORE || busy || !state.update) {
       notify('No StarNet update is ready to install', 'warn');
@@ -391,6 +396,7 @@ const Updates = (() => {
   }
 
   function settingsHtml() {
+    if (MANUAL_ONLY) return '<h4 class="ms-h">MRLN UPDATES</h4><div class="up-mini"><div><b>MANUAL TEST BUILDS</b><span>Auto-updates disabled for this fork.</span></div><button class="bb sm" id="set-updates-open">VIEW BUILDS</button></div>';
     const auto = prefs.autoCheck !== false;
     return '<h4 class="ms-h">UPDATES</h4>' +
       '<div class="up-mini">' +
@@ -417,6 +423,7 @@ const Updates = (() => {
   }
 
   function html() {
+    if (MANUAL_ONLY) return '<div class="up-center"><div class="up-head"><div><b>MRLN WINDOWS TEST BUILDS</b><span>Manual installation · no signed public updater</span></div></div><div class="up-empty">Your installed application cannot update itself. Choose a successful MRLN Windows Actions run, download its internal test installer and keep your station data backed up.</div><div class="up-foot"><a href="#" id="up-manual-foot" class="up-manual-link">OPEN MRLN WINDOWS BUILDS ↗</a></div></div>';
     if (!TAURI) {
       return '<div class="fb-empty">DESKTOP UPDATES ARE AVAILABLE IN THE PACKAGED STARNET APP.<br><span>This browser preview cannot install native releases.</span></div>';
     }
