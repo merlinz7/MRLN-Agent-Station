@@ -59,8 +59,13 @@ const SPRITES = (() => {
      the moment ULTRON, a new set, or the DATA.SKINS fallback changed; asking the engine cannot. */
   function setForBody(b) {
     const study=typeof SkinStudy!=='undefined'&&SkinStudy.setFor(b);if(study)return study;
-    return (b && b.id === 'ULTRON') ? (DATA.SKINS.ultron?.set || 'ultron')
-      : ((DATA.SKINS[b && b.skin] && DATA.SKINS[b.skin].set) || DATA.SKINS[DATA.DEFAULT_SKIN].set);
+    // The MRLN Commander uses the chosen original MRLN skin, not StarNet's licensed ULTRON character.
+    // This also keeps fallback bodies (without an assigned skin) inside MRLN's own asset set.
+    const chosen = b && DATA.SKINS[b.skin];
+    const fallback = DATA.SKINS[DATA.DEFAULT_SKIN];
+    if (b && b.id === 'ULTRON' && typeof MRLNCrewArt !== 'undefined')
+      return (chosen && MRLNCrewArt.isOriginalSet(chosen.set) ? chosen : fallback).set;
+    return (chosen || fallback).set;
   }
   function bodyScale(b) { return drawScaleFor(setForBody(b)); }
   function isReviewSet(set) { return /^(approved|readability|industrial)_/.test(set); }
