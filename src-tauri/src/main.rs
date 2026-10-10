@@ -517,7 +517,7 @@ fn workspace_path(app: &tauri::AppHandle) -> PathBuf {
                 .or_else(|| std::env::var_os("APPDATA"))
                 .map(PathBuf::from)
                 .unwrap_or_else(|| PathBuf::from("."));
-            base.join("ai.skynet.harness").join("workspaces")
+            base.join("com.mrln.agentstation").join("workspaces")
         })
 }
 
@@ -539,34 +539,10 @@ fn push_unique_path(out: &mut Vec<PathBuf>, path: PathBuf) {
     out.push(path);
 }
 
-fn legacy_workspace_paths(root: &Path, current: &Path) -> Vec<PathBuf> {
-    let mut out = Vec::new();
-    let mut appdata_bases = ["LOCALAPPDATA", "APPDATA", "XDG_DATA_HOME"]
-        .into_iter()
-        .filter_map(|name| std::env::var_os(name).map(PathBuf::from))
-        .collect::<Vec<_>>();
-    if let Some(home) = std::env::var_os("HOME").map(PathBuf::from) {
-        // Tauri's live macOS root is ~/Library/Application Support/<bundle-id>, while old/manual Node
-        // sidecars used ~/.local/share/{StarNet,Skynet}. Both are migration sources; the current root is
-        // filtered below. Linux receives the same POSIX fallback that sidecar/workspace-safety.js protects.
-        if cfg!(target_os = "macos") {
-            appdata_bases.push(home.join("Library").join("Application Support"));
-        }
-        appdata_bases.push(home.join(".local").join("share"));
-    }
-    for base in appdata_bases {
-        push_unique_path(&mut out, base.join("StarNet").join("workspaces"));
-        push_unique_path(&mut out, base.join("Skynet").join("workspaces"));
-        push_unique_path(&mut out, base.join("ai.skynet.harness").join("workspaces"));
-    }
-    push_unique_path(
-        &mut out,
-        strip_verbatim(root).join("sidecar").join("workspaces"),
-    );
-    push_unique_path(&mut out, strip_verbatim(root).join("workspaces"));
-    out.into_iter()
-        .filter(|path| !same_path(path, current))
-        .collect()
+/// MRLN is a separate product: never import or delete StarNet workspaces automatically.
+/// An explicit future import tool must be separately permissioned and copy-only.
+fn legacy_workspace_paths(_root: &Path, _current: &Path) -> Vec<PathBuf> {
+    Vec::new()
 }
 
 fn copy_missing_dir(src: &Path, dst: &Path) -> std::io::Result<()> {
