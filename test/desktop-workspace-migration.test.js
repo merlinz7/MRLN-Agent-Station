@@ -10,15 +10,17 @@ const path = require('node:path');
 
 const src = fs.readFileSync(path.join(__dirname, '../src-tauri/src/main.rs'), 'utf8');
 
-A.ok(/fn\s+legacy_workspace_paths\s*\(/.test(src), 'desktop launcher declares legacy_workspace_paths');
-A.ok(/target_os\s*=\s*"macos"[\s\S]{0,260}?Library[\s\S]{0,120}?Application Support/.test(src), 'desktop migration scans the native macOS Application Support shelf');
-A.ok(/home\.join\("\.local"\)\.join\("share"\)/.test(src), 'desktop migration scans the manual-sidecar POSIX shelf');
-A.ok(/valid_station_save_hash[\s\S]{0,5000}?distinct_saves\.len\(\)\s*>\s*1[\s\S]{0,800}?awaiting explicit Recovery Mode selection/.test(src), 'desktop migration refuses to merge distinct valid legacy stations');
-A.ok(/base\.join\("StarNet"\)\.join\("workspaces"\)/.test(src), 'legacy StarNet app-data workspace is considered');
-A.ok(/base\.join\("Skynet"\)\.join\("workspaces"\)/.test(src), 'legacy Skynet app-data workspace is considered');
-A.ok(/base\.join\("ai\.skynet\.harness"\)\.join\("workspaces"\)/.test(src), 'identifier-based app-data workspace is considered');
-A.ok(/join\("sidecar"\)\.join\("workspaces"\)/.test(src), 'old install-sidecar workspace is considered');
-
+// A separate MRLN installation must NEVER import old StarNet state by default.
+// Retain the staged migration implementation for a future explicit, copy-only import,
+// but verify that the automatic source discovery is empty.
+const legacy = src.match(/fn legacy_workspace_paths\([^]*?\n\}/);
+A.ok(!!legacy, 'MRLN keeps a clearly isolated migration source selector');
+if (legacy) {
+  A.ok(/Vec::new\(\)/.test(legacy[0]), 'MRLN automatic migration source list is empty');
+  A.ok(!/StarNet|Skynet|ai\\.skynet\\.harness/.test(legacy[0]), 'MRLN never scans previous StarNet profiles for automatic import');
+}
+A.ok(/base\.join\("com\.mrln\.agentstation"\)\.join\("workspaces"\)/.test(src),
+  'MRLN fallback workspace uses its own application namespace');
 A.ok(/fn\s+copy_missing_dir\s*\(/.test(src), 'desktop launcher declares copy_missing_dir');
 A.ok(/if\s+!\s*dst\.exists\(\)\s*\{[\s\S]{0,220}std::fs::copy\(src,\s*dst\)/.test(src), 'migration copies files only when destination is missing');
 A.ok(/file_type\(\)\.is_symlink\(\)[\s\S]{0,80}return\s+Ok\(\(\)\)/.test(src), 'migration skips symlinks');
