@@ -19,6 +19,8 @@ on:
       - 'frontend/app/stationtemplates.js'
       - 'frontend/index.html'
       - 'frontend/app/app.js'
+      - 'frontend/app/updates.js'
+      - 'test/update-state-parity.test.js'
       - 'test/mrln-brand-integration.test.js'
       - 'test/mrln-distribution-gate.test.js'
       - 'test/mrln-product-claims.test.js'
@@ -75,4 +77,5 @@ jobs:
           node --check frontend/app/skinstage.js
           node --check frontend/app/agentportraits.js
           node --check frontend/app/app.js
+          node --check frontend/app/updates.js
           node --check frontend/app/stationtemplates.js
