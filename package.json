@@ -1,17 +1,17 @@
 {
-  "name": "starnet-harness",
+  "name": "mrln-agent-station",
   "version": "0.13.2",
   "private": true,
-  "description": "A local-first, gamified desktop harness for building and running real AI-agent teams.",
+  "description": "An independent, local-first Windows AI-agent station built on the MIT-licensed StarNet engine.",
   "license": "MIT",
-  "author": "Andrew Sims",
+  "author": "MRLN Agent Station contributors (StarNet original code: Andrew Sims)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/androoAGI/starnet.git"
+    "url": "git+https://github.com/merlinz7/MRLN-Agent-Station.git"
   },
-  "homepage": "https://github.com/androoAGI/starnet#readme",
+  "homepage": "https://github.com/merlinz7/MRLN-Agent-Station#readme",
   "bugs": {
-    "url": "https://github.com/androoAGI/starnet/issues"
+    "url": "https://github.com/merlinz7/MRLN-Agent-Station/issues"
   },
   "keywords": [
     "ai-agents",
@@ -161,7 +161,8 @@
     "release:canary": "node scripts/update-canary.mjs",
     "release:promotion-gate": "node scripts/release-promotion-gate.mjs",
     "security:secrets": "node scripts/scan-history-secrets.mjs",
-    "eval:skills": "node scripts/eval/skills.mjs"
+    "eval:skills": "node scripts/eval/skills.mjs",
+    "build:mrln:windows": "node scripts/mrln-stage-windows.mjs && node scripts/prepare-node.mjs win-x64 && node scripts/stage-voice-deps.mjs --target win-x64 && node scripts/stage-frontend-dist.mjs && tauri build --bundles nsis"
   },
   "devDependencies": {
     "@napi-rs/canvas": "0.1.100",
