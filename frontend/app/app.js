@@ -2878,7 +2878,10 @@ const App = (() => {
     userPickedProvider = false;
     { const sl = el('btn-starnet-link'); if (sl) sl.onclick = () => startStarnetLink(); }
     { const ss = el('btn-starnet-switch'); if (ss) ss.onclick = () => switchStarnetAccount(); }
-    revealStarnetGenesis(!recovery);
+    // MRLN is an independent fork: a discovered StarNet subscription must never be
+    // auto-selected or presented as the default MRLN payment flow.
+    // It remains selectable only if the user explicitly chooses the external provider.
+    revealStarnetGenesis(false);
     // BYOK key-safety note: collapsed by default, expanded by its own disclosure toggle (progressive disclosure).
     { const bt = el('byok-toggle'), bn = el('byok-note');
       if (bt && bn) {
