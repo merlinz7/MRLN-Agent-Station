@@ -7,7 +7,7 @@
 use std::collections::BTreeMap;
 use std::path::Path;
 
-pub(crate) const KEYCHAIN_SERVICE: &str = "ai.skynet.harness";
+pub(crate) const KEYCHAIN_SERVICE: &str = "com.mrln.agentstation";
 pub(crate) const KEYCHAIN_ACCOUNT: &str = "openrouter";
 
 /// Stable envelope-encryption key. Never replace an existing malformed/unreadable
