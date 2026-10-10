@@ -549,7 +549,7 @@
         /* MRLN's measured qwen3.5:2b Q4 smoke: the model replied in 1.9 s with think:false,
            but its default-thinking task spent 92 s planning without completing the test.
            Keep this narrowly scoped to the tested 2B aliases; all other models retain their
-           original task behavior. An explicitly requested effort always takes precedence. */
+           original task behavior. Explicit medium/high remain available; on this model\n           minimal maps to non-thinking, matching Ollama's boolean native switch. */
         const quickQwen2b = /^qwen3\.5:2b(?:-q4_k_m)?$/i.test(String(req.model || '').trim());
         const effort = String(requestedEffort).trim().toLowerCase();
         const explicitOff = effort === 'none' || effort === 'off';
