@@ -53,4 +53,33 @@ const selected = [...legacyHtml.matchAll(/data-skin="([^"]+)"[^>]*aria-pressed="
 A.eq(selected, ['station_minion'], 'retired saved ID highlights its approved replacement');
 A.eq(legacyAgent.skin, 'minionchar', 'rendering the picker preserves the saved ID');
 A.ok(legacyHtml.includes('assets/sprites/approved_station_minion/rot_south.png'), 'replacement tile shows approved artwork');
+// MRLN's generator publishes SVG data-URI thumbnails; never silently request
+// missing PNG masters for one of the new selectable animated crew outfits.
+const mrlnCtx = vm.createContext({
+  DATA: {
+    DEFAULT_SKIN: 'mrln_nova',
+    SKINS: {
+      cadet: { name: 'Legacy Cadet', set: 'cadet' },
+      mrln_nova: { name: 'MRLN Nova', set: 'mrln_nova' },
+      mrln_atlas: { name: 'MRLN Atlas', set: 'mrln_atlas' }
+    }
+  },
+  MRLNCrewArt: {
+    skinIds: ['mrln_nova', 'mrln_atlas'],
+    isOriginalSet: set => set.startsWith('mrln_'),
+    still: set => 'data:image/svg+xml;charset=utf-8,' + set
+  },
+  esc: String
+});
+const renderMrln = vm.runInContext(source.slice(start, end) + '\n agCommand;', mrlnCtx);
+const mrlnHtml = renderMrln({ id: 'agent', skin: 'cadet' });
+A.ok(mrlnHtml.indexOf('data-skin="mrln_nova"') < mrlnHtml.indexOf('data-skin="cadet"'),
+  'MRLN original skins appear before legacy choices in an existing agent dossier');
+A.ok(mrlnHtml.includes('src="data:image/svg+xml;charset=utf-8,mrln_atlas"'),
+  'MRLN original Atlas uses its generated real thumbnail, never a missing PNG path');
+A.ok(mrlnHtml.includes('src="assets/sprites/cadet/rot_south.png"'),
+  'saved upstream skin remains available with its unchanged image');
+A.ok(/data-skin="cadet"[^>]*aria-pressed="true"/.test(mrlnHtml),
+  'reordering choices does not replace the user-selected saved legacy skin');
+
 A.report('dossier-skin-accessibility.test');
