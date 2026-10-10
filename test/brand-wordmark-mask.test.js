@@ -73,8 +73,26 @@ const markEl = (html.match(/<[a-z]+[^>]*class="logo-img"[^>]*>/) || [])[0] || ''
 A.ok(markEl, 'index.html still mounts an element with class="logo-img"');
 A.ok(/^<span/.test(markEl),
   'the mark is a <span> — an <img> cannot take var(--ph), and it was the img that had no size until it decoded');
-A.ok(/aria-label="STARNET"/.test(markEl) && /role="img"/.test(markEl),
-  'the masked span still names itself STARNET for assistive tech (a background image has no alt text)');
+const appId = JSON.parse(fs.readFileSync(path.join(root, 'src-tauri', 'tauri.conf.json'), 'utf8')).identifier;
+if (appId === 'com.mrln.agentstation') {
+  A.ok(/aria-label="MRLN Agent Station"/.test(markEl) && /role="img"/.test(markEl),
+    'MRLN visible logo is correctly named for assistive technology');
+  const mrlnSvg = fs.readFileSync(path.join(root, 'frontend', 'assets', 'brand', 'mrln-wordmark.svg'), 'utf8');
+  const mrlnCss = fs.readFileSync(path.join(root, 'frontend', 'css', 'mrln-brand.css'), 'utf8');
+  const mrlnViewbox = (mrlnSvg.match(/viewBox="0 0 ([\\d.]+) ([\\d.]+)"/) || []).slice(1).map(Number);
+  const mrlnLogoRule = (mrlnCss.match(/\\.logo-img\\s*\\{[^}]*\\}/) || [])[0] || '';
+  const mrlnAspect = (mrlnLogoRule.match(/aspect-ratio:\\s*([\\d.]+)\\s*\\/\\s*([\\d.]+)/) || []).slice(1).map(Number);
+  A.ok(mrlnViewbox.length === 2 && mrlnAspect.length === 2 &&
+    Math.abs(mrlnViewbox[0]/mrlnViewbox[1] - mrlnAspect[0]/mrlnAspect[1]) < 0.002,
+    'MRLN custom wordmark viewBox and masked CSS aspect ratio agree');
+  A.ok(/mask-image:\\s*url\\('\\.\\.\\/assets\\/brand\\/mrln-wordmark\\.svg'\\)/.test(mrlnLogoRule) &&
+    /-webkit-mask-image:\\s*url\\('\\.\\.\\/assets\\/brand\\/mrln-wordmark\\.svg'\\)/.test(mrlnLogoRule),
+    'MRLN overlay points to original MRLN wordmark in both modern and WebKit mask engines');
+  A.ok(!/<!--[^]*--[^]*-->/.test(mrlnSvg), 'MRLN SVG avoids invalid double hyphens inside comments');
+} else {
+  A.ok(/aria-label="STARNET"/.test(markEl) && /role="img"/.test(markEl),
+    'upstream StarNet wordmark preserves its accessible label');
+}
 
 // ---- 4. z-order: under the CRT glass, over the screen ---------------------------------------
 const logoRule = (css.match(/#logo\s*\{[^}]*\}/) || [])[0] || '';
