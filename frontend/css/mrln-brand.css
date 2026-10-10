@@ -1,0 +1,9 @@
+/* MRLN brand foundation: new original identity; preserve the inherited game renderer. */
+.logo-img { height: 30px; aspect-ratio: 980 / 160; -webkit-mask-image:url('../assets/brand/mrln-wordmark.svg'); mask-image:url('../assets/brand/mrln-wordmark.svg'); }
+#screen-connect .ov-wordmark { width: 180px; height: 30px; mask-image:url('../assets/brand/mrln-wordmark.svg'); }
+.sp-logo { width:min(70vw,760px); }
+body.theme-amber { --ph:#62e1e4; --ph-rgb:98,225,228; --ph-bright:#c3faff; --ph-bright-rgb:195,250,255; --ph-dim:#74aebd; --ph-glow:rgba(98,225,228,.42); --ph-glow2:rgba(98,225,228,.14); --gold:#e6ae76; --gold-rgb:230,174,118; --bg:#020710; --panel:rgba(5,13,23,.95); --panel2:#0b1726; --text:#bad3da; --ph-faint:#102b36; --ink:#04121a; }
+#screen-splash { background:#030813; }
+#screen-connect .ov-hero { background:radial-gradient(ellipse at 50% 23%,rgba(98,225,228,.085),transparent 65%),rgba(0,0,0,.12); }
+#screen-connect .skin-thumb:focus-visible { outline:2px solid var(--ph-bright); outline-offset:2px; }
+@media(prefers-reduced-motion:reduce){ .sp-logo { animation:none; } }
