@@ -36,7 +36,7 @@ try{
     const skyId=SpaceBG.setBackdrop('mrln-ion-veil');
     await new Promise(resolve=>setTimeout(resolve,3200));
     const doc=World.stationDoc();
-    return {rooms:doc.order.filter(id=>doc.rooms[id] && doc.rooms[id].kind!=='corridor').length,corridors:doc.order.filter(id=>doc.rooms[id] && doc.rooms[id].kind==='corridor').length,preset:doc.meta.templateId,sky:SpaceBG.getBackdrop(),skyReady:SpaceBG._dbgBakeState().ready,novas:(typeof MRLNCrewArt!=='undefined'&&MRLNCrewArt.skinIds.length===24&&MRLNCrewArt.skinIds.includes('mrln_nova'))};
+    return {rooms:doc.order.filter(id=>doc.rooms[id] && doc.rooms[id].kind!=='corridor').length,corridors:doc.order.filter(id=>doc.rooms[id] && doc.rooms[id].kind==='corridor').length,preset:doc.meta.templateId,sky:SpaceBG.getBackdrop(),skyReady:SpaceBG._dbgBakeState().ready,novas:(typeof MRLNCrewArt!=='undefined'&&MRLNCrewArt.skinIds.length===40&&MRLNCrewArt.skinIds.includes('mrln_nova'))};
   })()`);
   if(!result||result.rooms!==5||result.preset!=='mrln-studio'||!result.novas||result.sky!=='mrln-ion-veil')
     throw Error('unexpected MRLN station: '+JSON.stringify(result));
