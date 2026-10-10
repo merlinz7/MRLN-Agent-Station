@@ -33,8 +33,21 @@ jobs:
           node test/mrln-crew-art.test.js
           node test/mrln-materials.test.js
           node test/datareset.test.js
+      - name: Inherited media audit (internal report, public release remains blocked)
+        run: node scripts/mrln-release-assets.mjs
+
+      - name: Upload rights-clearance inventory
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mrln-media-clearance-report
+          path: .mrln-audit/assets.json
+          include-hidden-files: true
+          if-no-files-found: warn
+
       - name: JavaScript syntax
         run: |
+          node --check scripts/mrln-release-assets.mjs
           node --check frontend/app/mrln-crew-art.js
           node --check frontend/app/mrln-materials.js
           node --check frontend/app/industrialtextures.js
