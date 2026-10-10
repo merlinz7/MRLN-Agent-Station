@@ -1896,7 +1896,7 @@ const SpaceBG = (() => {
 
   /* ---------------------------------------------------------------------- registry ---- */
 
-  const BACKDROPS = { void: VOID_BG, galaxy: GALAXY_BG, belt: BELT_BG, nursery: NURSERY_BG, ocean: OCEAN_BG, city: CITY_BG };
+  const BACKDROPS = { ...(typeof MRLNSky !== 'undefined' ? { 'mrln-ion-veil': MRLNSky } : {}), void: VOID_BG, galaxy: GALAXY_BG, belt: BELT_BG, nursery: NURSERY_BG, ocean: OCEAN_BG, city: CITY_BG };
   const ORDER = ["void", "galaxy", "belt", "nursery", "ocean", "city"];
   const DEFAULT_ID = 'void';
 
