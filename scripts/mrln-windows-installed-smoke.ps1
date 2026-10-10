@@ -35,10 +35,12 @@ foreach ($key in @(
   'HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*'
 )) {
   foreach ($entry in @(Get-ItemProperty -Path $key -ErrorAction SilentlyContinue)) {
-    if ($entry.DisplayName -notlike '*MRLN Agent Station*') { continue }
-    if ($entry.InstallLocation) {
-      $roots.Add(([string]$entry.InstallLocation).Trim('"'))
-      Write-Host "MRLN registry InstallLocation: $($entry.InstallLocation)"
+    $displayName = $entry.PSObject.Properties['DisplayName']
+    if (-not $displayName -or $displayName.Value -notlike '*MRLN Agent Station*') { continue }
+    $location = $entry.PSObject.Properties['InstallLocation']
+    if ($location -and $location.Value) {
+      $roots.Add(([string]$location.Value).Trim('"'))
+      Write-Host "MRLN registry InstallLocation: $($location.Value)"
     }
   }
 }
