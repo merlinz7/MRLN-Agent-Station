@@ -1898,7 +1898,9 @@ const SpaceBG = (() => {
 
   const BACKDROPS = { ...(typeof MRLNSky !== 'undefined' ? { 'mrln-ion-veil': MRLNSky } : {}), void: VOID_BG, galaxy: GALAXY_BG, belt: BELT_BG, nursery: NURSERY_BG, ocean: OCEAN_BG, city: CITY_BG };
   const ORDER = [...(typeof MRLNSky !== 'undefined' ? ['mrln-ion-veil'] : []), "void", "galaxy", "belt", "nursery", "ocean", "city"];
-  const DEFAULT_ID = 'void';
+  // The MRLN sky is the default only for newly created MRLN stations.
+  // Existing saves with an explicit backdrop keep their selected environment.
+  const DEFAULT_ID = (typeof MRLNSky !== 'undefined') ? 'mrln-ion-veil' : 'void';
 
   const has = id => Object.prototype.hasOwnProperty.call(BACKDROPS, id);
   const resolve = id => (has(id) ? id : DEFAULT_ID);
