@@ -33,17 +33,18 @@ try{
     const next=StationTemplates.build('mrln-studio', WorldModel, PropSprites);
     const active=WorldModel.create(next);
     World.loadStation(active);
-    await new Promise(resolve=>setTimeout(resolve,2200));
+    const skyId=SpaceBG.setBackdrop('mrln-ion-veil');
+    await new Promise(resolve=>setTimeout(resolve,3200));
     const doc=World.stationDoc();
-    return {rooms:doc.order.filter(id=>doc.rooms[id] && doc.rooms[id].kind!=='corridor').length,corridors:doc.order.filter(id=>doc.rooms[id] && doc.rooms[id].kind==='corridor').length,preset:doc.meta.templateId,novas:(typeof MRLNCrewArt!=='undefined'&&MRLNCrewArt.skinIds.length===24&&MRLNCrewArt.skinIds.includes('mrln_nova'))};
+    return {rooms:doc.order.filter(id=>doc.rooms[id] && doc.rooms[id].kind!=='corridor').length,corridors:doc.order.filter(id=>doc.rooms[id] && doc.rooms[id].kind==='corridor').length,preset:doc.meta.templateId,sky:SpaceBG.getBackdrop(),skyReady:SpaceBG._dbgBakeState().ready,novas:(typeof MRLNCrewArt!=='undefined'&&MRLNCrewArt.skinIds.length===24&&MRLNCrewArt.skinIds.includes('mrln_nova'))};
   })()`);
-  if(!result||result.rooms!==5||result.preset!=='mrln-studio'||!result.novas)
+  if(!result||result.rooms!==5||result.preset!=='mrln-studio'||!result.novas||result.sky!=='mrln-ion-veil'||!result.skyReady)
     throw Error('unexpected MRLN station: '+JSON.stringify(result));
   await sleep(1000);
   // Hold the completed visual frame without implying any work actually ran.
   await evalJS(cdp,'World.stop(); true');
   await capture(cdp,out,'five-sector');
-  report.ready=true;report.rooms=result.rooms;report.preset=result.preset;
+  report.ready=true;report.rooms=result.rooms;report.preset=result.preset;report.sky=result.sky;
   code=0;
 }catch(error){report.error=String(error.stack||error);console.error(report.error);}
 finally{
