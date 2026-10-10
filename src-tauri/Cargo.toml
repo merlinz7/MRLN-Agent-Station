@@ -1,8 +1,8 @@
 [package]
-name = "skynet-desktop"
+name = "mrln-agent-station"
 version = "0.13.2"
-description = "StarNet native desktop shell for the gamified AI-agent harness"
-authors = ["StarNet"]
+description = "MRLN Agent Station native desktop shell based on MIT-licensed StarNet"
+authors = ["MRLN Agent Station contributors"]
 edition = "2021"
 rust-version = "1.77.2"
 
