@@ -1,0 +1,65 @@
+name: MRLN real-station visual proof
+on:
+  push:
+    branches: [feature/mrln-qa-brand-gallery] 
+  pull_request:
+    branches: [fix/mrln-installed-windows-proof]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  station-screenshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+
+      - name: Select original MRLN Nova skin for seeded proof
+        run: |
+          node -e "const fs=require('fs');const p='dev/fixtures/seed-workspace/agent.save.json';const d=JSON.parse(fs.readFileSync(p));d.doc.agent.skin='mrln_nova';fs.writeFileSync(p,JSON.stringify(d,null,2));"
+
+      - name: Resolve a Chrome binary for screenshot proof
+        run: |
+          set -euo pipefail
+          CHROME=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium-browser || true)
+          test -n "$CHROME" || { echo "::error::no Chrome available"; exit 1; }
+          WRAP=/usr/local/bin/mrln-ci-chrome
+          printf '#!/bin/sh\nexec %s --no-sandbox --disable-dev-shm-usage "$@"\n' "$CHROME" | sudo tee "$WRAP" >/dev/null
+          sudo chmod +x "$WRAP"
+          echo "SKYNET_CHROME=$WRAP" >> "$GITHUB_ENV"
+
+      - name: Capture actual running station (not a concept image)
+        env:
+          SKYNET_SHOT_PORT: '8968'
+          SKYNET_CDP_PORT: '9368'
+          SKYNET_SHOT_DIR: '.uishots-mrln'
+        run: node scripts/shoot.mjs --only ingame
+
+      - name: Verify screenshot proof receipt
+        run: |
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('.uishots-mrln/manifest.json'));if(!p.ready||p.activeScreen!=='screen-game'||p.states.filter(x=>!x.ok).length||p.exceptions.length||!fs.existsSync('.uishots-mrln/ingame.png'))process.exit(1);console.log('MRLN live station screenshot verified');"
+
+      - name: Capture full five-sector MRLN Agent Studio
+        env:
+          MRLN_PROOF_PORT: '8971'
+          MRLN_CDP_PORT: '9371'
+        run: node scripts/mrln-five-sector-proof.mjs
+
+      - name: Upload actual rendered screenshot, receipt and console evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mrln-real-station-screenshot
+          path: |
+            .uishots-mrln/ingame.png
+            .uishots-mrln/manifest.json
+            .uishots-mrln-multi/five-sector.png
+            .uishots-mrln-multi/five-sector.json
+          if-no-files-found: warn
+          retention-days: 7
