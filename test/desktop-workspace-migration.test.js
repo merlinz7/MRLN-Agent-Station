@@ -18,7 +18,7 @@ const isMrln = tauri.identifier === 'com.mrln.agentstation';
 if (isMrln) {
   A.ok(/fn\s+legacy_workspace_paths\(_root:\s*&Path,\s*_current:\s*&Path\)\s*->\s*Vec<PathBuf>\s*\{\s*Vec::new\(\)\s*\}/.test(src),
     'MRLN disables automatic StarNet data import, including manual sidecar and legacy app-data roots');
-  A.ok(!/base\.join\("(?:StarNet|Skynet|ai\\.skynet\\.harness)"\)\.join\("workspaces"\)/.test(src),
+  A.ok(!/base\.join\("(?:StarNet|Skynet|ai\.skynet\.harness)"\)\.join\("workspaces"\)/.test(src),
     'MRLN never enumerates legacy StarNet or Skynet workspaces for automatic import');
   A.ok(/base\.join\("com\.mrln\.agentstation"\)\.join\("workspaces"\)/.test(src),
     'MRLN fallback workspace uses its separate application identifier');
