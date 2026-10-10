@@ -2,9 +2,9 @@ name: MRLN Windows internal test installer
 
 on:
   push:
-    branches: [feature/mrln-animated-crew, feature/mrln-qa-brand-gallery]
+    branches: [feature/mrln-animated-crew, feature/mrln-qa-brand-gallery, fix/mrln-provider-onboarding]
   pull_request:
-    branches: [feature/mrln-animated-crew, feature/mrln-qa-brand-gallery]
+    branches: [feature/mrln-animated-crew, feature/mrln-qa-brand-gallery, fix/mrln-provider-onboarding]
   workflow_dispatch:
 
 permissions:
