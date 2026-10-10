@@ -1,0 +1,41 @@
+name: MRLN crew and design checks
+on:
+  pull_request:
+    paths:
+      - 'frontend/app/mrln-crew-art.js'
+      - 'frontend/app/mrln-materials.js'
+      - 'frontend/app/industrialtextures.js'
+      - 'test/mrln-materials.test.js'
+      - 'frontend/app/skinstage.js'
+      - 'frontend/app/agentportraits.js'
+      - 'frontend/js/assets.js'
+      - 'frontend/app/stationtemplates.js'
+      - 'frontend/index.html'
+      - 'test/mrln-crew-art.test.js'
+      - '.github/workflows/mrln-crew.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  crew-sprites:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify six crews and every animation track
+        run: |
+          node test/mrln-crew-art.test.js
+          node test/mrln-materials.test.js
+      - name: JavaScript syntax
+        run: |
+          node --check frontend/app/mrln-crew-art.js
+          node --check frontend/app/mrln-materials.js
+          node --check frontend/app/industrialtextures.js
+          node --check frontend/js/assets.js
+          node --check frontend/app/skinstage.js
+          node --check frontend/app/agentportraits.js
+          node --check frontend/app/app.js
+          node --check frontend/app/stationtemplates.js
