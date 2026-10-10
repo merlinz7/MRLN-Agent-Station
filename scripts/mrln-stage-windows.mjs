@@ -95,6 +95,16 @@ conf.bundle.windows.nsis??={};
 conf.bundle.windows.nsis.installerIcon='icons/icon.ico';
 conf.bundle.windows.nsis.headerImage='installer/header.bmp';
 conf.bundle.windows.nsis.sidebarImage='installer/sidebar.bmp';
+// The inherited NSIS hooks inspect StarNet uninstall registry keys and executable names.
+// They must never be executed by an unrelated MRLN installer.
+delete conf.bundle.windows.nsis.installerHooks;
+// Build a distinct executable name, not just a changed display label.
+const cargoPath=path.join(tauri,'Cargo.toml');
+const cargo=fs.readFileSync(cargoPath,'utf8');
+const rewritten=cargo.replace(/^name\s*=\s*"skynet-desktop"/m,'name = "mrln-agent-station"');
+if(rewritten===cargo)throw new Error('could not isolate the StarNet executable name');
+fs.writeFileSync(cargoPath,rewritten);
+
 fs.writeFileSync(confpath,JSON.stringify(conf,null,2)+'\n');
 const assert=JSON.parse(fs.readFileSync(confpath,'utf8'));
 if(assert.productName!=='MRLN Agent Station'||assert.identifier!=='com.mrln.agentstation'||
