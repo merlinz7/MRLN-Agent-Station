@@ -194,8 +194,19 @@ A.ok(/if let Err\(e\) = install_result[\s\S]*?\*guard = Some\(update\)/.test(mai
   'a failed native update restores the verified pending update for retry');
 A.ok(/UpdateInstallEvent::Installing[\s\S]*?app\.restart\(\)/.test(mainRs),
   'a successful macOS/non-Windows update reaches the explicit restart path');
-A.ok(/const KEYCHAIN_SERVICE: &str = "ai\.skynet\.harness"/.test(credentialsRs),
-  'candidate keeps the released OS keychain service namespace');
+// The original StarNet upgrade contract is intentionally not an MRLN credential migration.
+// A forked desktop must *not* reuse upstream's released keychain service: that could make
+// unrelated apps read the same secrets. Check the identity against the actual bundle id.
+const tauriIdentity = JSON.parse(fs.readFileSync(path.join(__dirname, '../src-tauri/tauri.conf.json'), 'utf8')).identifier;
+if (tauriIdentity === 'com.mrln.agentstation') {
+  A.ok(/const KEYCHAIN_SERVICE: &str = "com\\.mrln\\.agentstation"/.test(credentialsRs),
+    'MRLN intentionally uses its own OS keychain service, isolated from StarNet');
+  A.ok(!/const KEYCHAIN_SERVICE: &str = "ai\\.skynet\\.harness"/.test(credentialsRs),
+    'MRLN cannot silently read released StarNet credentials');
+} else {
+  A.ok(/const KEYCHAIN_SERVICE: &str = "ai\\.skynet\\.harness"/.test(credentialsRs),
+    'upstream candidates keep the released OS keychain service namespace');
+}
 A.ok(/"openrouter" => KEYCHAIN_ACCOUNT\.to_string\(\)/.test(credentialsRs) && /format!\("provider:\{id\}"\)/.test(credentialsRs),
   'candidate keeps the released provider credential account references');
 A.ok(/format!\("channel:\{channel\}"\)/.test(credentialsRs) && /read_channel_token\(channel\)[\s\S]*?keychain_has_it[\s\S]*?remove\("token"\)/.test(credentialsRs),
