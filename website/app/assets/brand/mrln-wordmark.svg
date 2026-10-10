@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 160" role="img" aria-labelledby="title desc">
+  <title id="title">MRLN Agent Station</title>
+  <desc id="desc">Original angular MRLN monogram and Agent Station lettering</desc>
+  <g fill="none" stroke="#fff" stroke-width="21" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M28 125V35L76 85L124 35V125"/>
+    <path d="M182 125V35H229Q256 35 256 64Q256 93 229 93H182M222 94L259 125"/>
+    <path d="M313 35V125H386"/>
+    <path d="M438 125V35L523 125V35"/>
+  </g>
+  <path fill="#fff" d="M555 20h405v5H555zM555 145h405v5H555z"/>
+  <text x="566" y="89" fill="#fff" font-family="Consolas,DejaVu Sans Mono,monospace" font-size="62" font-weight="700" letter-spacing="9">AGENT</text>
+  <text x="566" y="135" fill="#fff" font-family="Consolas,DejaVu Sans Mono,monospace" font-size="42" font-weight="700" letter-spacing="10">STATION</text>
+</svg>
