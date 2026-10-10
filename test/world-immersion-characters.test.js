@@ -265,7 +265,12 @@ test('local lighting reuses native-size frames across agents and leaves the draw
   const leader = draw(sprites, body({ id: 'ULTRON' }), 1000, appearance);
   const groundedLeader = draw(sprites, body({ id: 'ULTRON' }), 1000, { ...appearance, skipGroundShadow: true });
   const authoredSpill = leader.ctx.ellipses.filter(ellipse => ellipse.color === '#ff4a3d');
-  assert.ok(authoredSpill.length > 0, 'leader has its established emissive spill');
+  // Legacy ULTRON receives the red leader aura only while rendering the upstream
+  // ultron sprite. MRLN's selected original commander must not inherit that unrelated
+  // red ground effect merely because the stable runtime ID is still ULTRON.
+  const legacyUltronBody = sprites.setForBody(body({ id: 'ULTRON' })) === 'ultron';
+  assert.equal(authoredSpill.length > 0, legacyUltronBody,
+    'leader spill follows the actual selected skin, not the inherited runtime identity');
   assert.deepEqual(groundedLeader.ctx.ellipses, authoredSpill,
     'scene grounding skips native cast/contact shadows while preserving the complete authored spill');
   const portrait = draw(sprites, body({ id: 'ULTRON', noShadow: true }), 1000, { ...appearance, skipGroundShadow: true });
