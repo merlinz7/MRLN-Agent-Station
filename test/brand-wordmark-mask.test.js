@@ -79,14 +79,14 @@ if (appId === 'com.mrln.agentstation') {
     'MRLN visible logo is correctly named for assistive technology');
   const mrlnSvg = fs.readFileSync(path.join(root, 'frontend', 'assets', 'brand', 'mrln-wordmark.svg'), 'utf8');
   const mrlnCss = fs.readFileSync(path.join(root, 'frontend', 'css', 'mrln-brand.css'), 'utf8');
-  const mrlnViewbox = (mrlnSvg.match(/viewBox="0 0 ([\\d.]+) ([\\d.]+)"/) || []).slice(1).map(Number);
-  const mrlnLogoRule = (mrlnCss.match(/\\.logo-img\\s*\\{[^}]*\\}/) || [])[0] || '';
-  const mrlnAspect = (mrlnLogoRule.match(/aspect-ratio:\\s*([\\d.]+)\\s*\\/\\s*([\\d.]+)/) || []).slice(1).map(Number);
+  const mrlnViewbox = (mrlnSvg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/) || []).slice(1).map(Number);
+  const mrlnLogoRule = (mrlnCss.match(/\.logo-img\s*\{[^}]*\}/) || [])[0] || '';
+  const mrlnAspect = (mrlnLogoRule.match(/aspect-ratio:\s*([\d.]+)\s*\/\s*([\d.]+)/) || []).slice(1).map(Number);
   A.ok(mrlnViewbox.length === 2 && mrlnAspect.length === 2 &&
     Math.abs(mrlnViewbox[0]/mrlnViewbox[1] - mrlnAspect[0]/mrlnAspect[1]) < 0.002,
     'MRLN custom wordmark viewBox and masked CSS aspect ratio agree');
-  A.ok(/mask-image:\\s*url\\('\\.\\.\\/assets\\/brand\\/mrln-wordmark\\.svg'\\)/.test(mrlnLogoRule) &&
-    /-webkit-mask-image:\\s*url\\('\\.\\.\\/assets\\/brand\\/mrln-wordmark\\.svg'\\)/.test(mrlnLogoRule),
+  A.ok(/mask-image:\s*url\('\.\.\/assets\/brand\/mrln-wordmark\.svg'\)/.test(mrlnLogoRule) &&
+    /-webkit-mask-image:\s*url\('\.\.\/assets\/brand\/mrln-wordmark\.svg'\)/.test(mrlnLogoRule),
     'MRLN overlay points to original MRLN wordmark in both modern and WebKit mask engines');
   A.ok(!/<!--[^]*--[^]*-->/.test(mrlnSvg), 'MRLN SVG avoids invalid double hyphens inside comments');
 } else {
