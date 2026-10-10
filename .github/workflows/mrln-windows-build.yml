@@ -2,7 +2,7 @@ name: MRLN Windows internal test installer
 
 on:
   push:
-    branches: [feature/mrln-animated-crew]
+    branches: [feature/mrln-animated-crew, feature/mrln-safe-reset-copy]
   workflow_dispatch:
 
 permissions:
@@ -58,6 +58,18 @@ jobs:
 
       - name: Build Windows installer (unsigned internal test only)
         run: npm run tauri -- build --bundles nsis
+
+      - name: Install and launch the MRLN Windows executable
+        shell: pwsh
+        run: ./scripts/mrln-windows-installed-smoke.ps1
+
+      - name: Upload installed launch evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mrln-windows-installed-smoke-${{ github.run_number }}
+          path: mrln-installed-smoke.json
+          if-no-files-found: warn
 
       - name: Upload internal test installer
         if: success()
