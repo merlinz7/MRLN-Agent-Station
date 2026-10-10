@@ -20,7 +20,7 @@
 use std::fs;
 use std::path::{Component, Path, PathBuf};
 
-const OWNED_NAMES: [&str; 3] = ["ai.skynet.harness", "starnet", "skynet"];
+const OWNED_NAMES: [&str; 1] = ["com.mrln.agentstation"];
 
 /// True when `path` is one StarNet owns outright (see the module rules).
 pub fn is_starnet_owned(path: &Path) -> bool {
@@ -73,7 +73,7 @@ pub fn plan_targets(
         .file_name()
         .map(|n| {
             n.to_string_lossy()
-                .eq_ignore_ascii_case("ai.skynet.harness")
+                .eq_ignore_ascii_case("com.mrln.agentstation")
         })
         .unwrap_or(false);
     if app_data_is_ours {
@@ -264,12 +264,12 @@ mod tests {
     #[test]
     fn ownership_guard_admits_only_starnet_locations() {
         assert!(is_starnet_owned(Path::new(
-            "/Users/a/Library/Application Support/ai.skynet.harness/workspaces"
+            "/Users/a/Library/Application Support/com.mrln.agentstation/workspaces"
         )));
-        assert!(is_starnet_owned(Path::new(
+        assert!(!is_starnet_owned(Path::new(
             "C:/Users/a/AppData/Local/StarNet/models"
         )));
-        assert!(is_starnet_owned(Path::new(
+        assert!(!is_starnet_owned(Path::new(
             "/home/a/.local/share/Skynet/workspaces"
         )));
         assert!(!is_starnet_owned(Path::new("/Users/a/Projects/my-app")));
@@ -284,7 +284,7 @@ mod tests {
     #[test]
     fn plan_keeps_the_fresh_workspace_and_the_webview_and_skips_foreign_paths() {
         let root = scratch("plan");
-        let app = root.join("ai.skynet.harness");
+        let app = root.join("com.mrln.agentstation");
         let ws = app.join("workspaces");
         for d in [
             ws.clone(),
@@ -315,7 +315,7 @@ mod tests {
         assert!(plan.contains(&app.join("update-snapshots")));
         assert!(plan.contains(&app.join("startup.log")));
         assert!(plan.contains(&app.join("lifecycle.json")));
-        assert!(plan.contains(&legacy));
+        assert!(!plan.contains(&legacy), "a legacy StarNet profile is never erased by MRLN");
         assert!(
             !plan.contains(&user_project),
             "a user project folder can never be a target"
