@@ -10,10 +10,15 @@ const path = require('path');
 const A = require('./_assert.js');
 
 const appSrc = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'app.js'), 'utf8');
-const gateSrc = A.fnBody(appSrc, 'function showFutureSaveGate(');
+const mrlnGateSrc = A.fnBody(appSrc, 'function showFutureSaveGate(');
+// The inherited updater path remains separately testable in isolation. The
+// production MRLN path is manual-only, and is tested below without substitution.
+const isMrln = JSON.parse(fs.readFileSync(path.join(__dirname, '../src-tauri/tauri.conf.json'),'utf8')).identifier === 'com.mrln.agentstation';
+const gateSrc = isMrln ? mrlnGateSrc.replace('if (true /* MRLN fork build: updater disabled in src-tauri/tauri.conf.json */)',
+  'if (false /* test harness: upstream legacy updater behavior only */)') : mrlnGateSrc;
 A.ok(gateSrc.length > 500 && gateSrc.length < 9000, 'showFutureSaveGate located (length guard)');
 
-function makeGate(updates) {
+function makeGate(updates, source = gateSrc, win = { __TAURI__: { core: {} } }) {
   const nodes = {};
   const node = (id) => ({ id, textContent: '', onclick: null, className: '', children: [], appendChild(c) { this.children.push(c); nodes[c.id] = c; c.parentNode = this; } });
   const actions = node('actions');
@@ -23,13 +28,33 @@ function makeGate(updates) {
   const document = { createElement: () => node('') };
   const shown = [];
   const run = new Function('el', 'document', 'window', 'Updates', 'SFX', 'Chat', 'World', 'Save', 'show',
-    'let gateActive = false;\n' + gateSrc + '\nreturn showFutureSaveGate;');
-  const gate = run(id => nodes[id] || null, document, { __TAURI__: { core: {} } }, updates, { click() {} }, { abort() {} }, { stop() {} }, { CURRENT: 5 }, id => shown.push(id));
+    'let gateActive = false;\n' + source + '\nreturn showFutureSaveGate;');
+  const gate = run(id => nodes[id] || null, document, win, updates, { click() {} }, { abort() {} }, { stop() {} }, { CURRENT: 5 }, id => shown.push(id));
   gate(6);
   return { nodes, actions, shown };
 }
 
 (async () => {
+  if (isMrln) {
+    let checkCalls = 0, installCalls = 0;
+    const opens = [];
+    const win = { __TAURI__: { core: {
+      invoke: async (cmd, args) => { opens.push([cmd,args.url]); }
+    } } };
+    const g = makeGate({
+      check: async () => { checkCalls++; },
+      install: async () => { installCalls++; }
+    }, mrlnGateSrc, win);
+    A.ok(/VIEW MRLN TEST BUILDS/.test(g.nodes['btn-future-update'].textContent),
+      'MRLN newer-save gate offers its own internal test builds, not StarNet');
+    await g.nodes['btn-future-update'].onclick();
+    A.eq(checkCalls, 0, 'MRLN never invokes upstream automatic updater');
+    A.eq(installCalls, 0, 'MRLN never attempts upstream native updater install');
+    A.eq(opens.length, 1, 'MRLN opens its manual GitHub builds in the native browser');
+    A.eq(opens[0][0], 'open_external_url');
+    A.ok(/merlinz7\/MRLN-Agent-Station\/actions\/workflows\/mrln-windows-build.yml/.test(opens[0][1]),
+      'manual URL is the MRLN fork builds workflow');
+  }
   {
     // #91: the in-app path failed at the recovery point -> say so, and offer the full installer (it keeps the station)
     let opened = 0;
