@@ -6,8 +6,8 @@
 //! quarantine folder. This module is the other door: it DELETES.
 //!
 //! Safety rules (each one is tested below):
-//!   * Only StarNet-owned locations are ever targets: every target must sit under a path component named
-//!     `ai.skynet.harness`, `StarNet`, `Skynet` or `starnet` and be at least three components deep. A user's project
+//!   * Only MRLN-owned locations are ever targets: every target must sit under a path component named
+//!     `com.mrln.agentstation` and be at least three components deep. A user's project
 //!     folder, home folder or a filesystem root can never qualify, whatever a caller passes.
 //!   * Links are never followed: a symlink/junction inside a target (or a target that is itself a link) is removed
 //!     as a link; whatever it points at is untouched. Trusted project folders are recorded by PATH in the station
@@ -22,7 +22,7 @@ use std::path::{Component, Path, PathBuf};
 
 const OWNED_NAMES: [&str; 1] = ["com.mrln.agentstation"];
 
-/// True when `path` is one StarNet owns outright (see the module rules).
+/// True when `path` is part of MRLN-owned app data (see the module rules).
 pub fn is_starnet_owned(path: &Path) -> bool {
     let normal: Vec<String> = path
         .components()
@@ -48,11 +48,11 @@ fn is_webview_dir(name: &str) -> bool {
 }
 
 /// Everything the erase deletes, in order. `app_data` is the parent of the active `workspaces` (the
-/// `ai.skynet.harness` app-data folder); its every entry except the fresh `workspaces` and a WebView folder is
-/// StarNet's (logs, lifecycle prefs, update snapshots, START FRESH quarantines, migration/erase leftovers).
+/// `com.mrln.agentstation` app-data folder); its every entry except the fresh `workspaces` and a WebView folder is
+/// MRLN's (logs, lifecycle prefs, update snapshots, START FRESH quarantines, migration/erase leftovers).
 /// `set_aside` is the old generation moved aside by fresh_start::set_aside_for_erase. `legacy_roots` are older
-/// StarNet data roots (only those under app-data bases are passed in; never the install folder). `extra` holds
-/// other StarNet caches (the local voice-model download).
+/// MRLN data roots only (never the original StarNet profile or install folder). `extra` holds
+/// other MRLN caches (the local voice-model download).
 pub fn plan_targets(
     app_data: &Path,
     active_workspaces: &Path,
@@ -145,7 +145,7 @@ pub fn remove_all(targets: &[PathBuf]) -> RemovalReport {
         if !is_starnet_owned(target) {
             report
                 .failed
-                .push((shown, "refused: not a StarNet-owned location".to_string()));
+                .push((shown, "refused: not a MRLN-owned location".to_string()));
             continue;
         }
         if fs::symlink_metadata(target).is_err() {
@@ -223,7 +223,7 @@ pub const PROVIDER_IDS: [&str; 18] = [
     "claude-cli",
 ];
 
-/// Every keychain account (service `ai.skynet.harness`) StarNet's desktop shell can have created.
+/// Every keychain account (service `com.mrln.agentstation`) MRLN's desktop shell can have created.
 pub fn keychain_accounts(channels: &[&str], telegram_bots: &[String]) -> Vec<String> {
     let mut out = Vec::new();
     for id in PROVIDER_IDS {
@@ -331,7 +331,7 @@ mod tests {
     #[test]
     fn removal_is_verified_and_never_follows_a_link_out_of_starnet_data() {
         let root = scratch("remove");
-        let app = root.join("ai.skynet.harness");
+        let app = root.join("com.mrln.agentstation");
         let aside = app.join(".erasing-station-1");
         fs::create_dir_all(aside.join("agent-1").join("deep")).unwrap();
         fs::write(
@@ -369,7 +369,7 @@ mod tests {
             1,
             "the foreign target is refused, not deleted"
         );
-        assert!(report.failed[0].1.contains("not a StarNet-owned"));
+        assert!(report.failed[0].1.contains("not a MRLN-owned"));
         let _ = fs::remove_dir_all(root);
     }
 
