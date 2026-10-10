@@ -4,6 +4,10 @@ on:
     paths:
       - 'frontend/app/mrln-crew-art.js'
       - 'frontend/app/mrln-materials.js'
+      - 'frontend/app/mrln-sky.js'
+      - 'frontend/app/spacebg.js'
+      - 'frontend/app/backdrop-bake-worker.js'
+      - 'test/mrln-sky.test.js'
       - 'frontend/app/industrialtextures.js'
       - 'test/mrln-materials.test.js'
       - 'test/datareset.test.js'
@@ -34,6 +38,7 @@ jobs:
         run: |
           node test/mrln-crew-art.test.js
           node test/mrln-materials.test.js
+          node test/mrln-sky.test.js
           node test/mrln-brand-integration.test.js
           node test/datareset.test.js
       - name: Inherited media audit (internal report, public release remains blocked)
@@ -53,6 +58,9 @@ jobs:
           node --check scripts/mrln-release-assets.mjs
           node --check frontend/app/mrln-crew-art.js
           node --check frontend/app/mrln-materials.js
+          node --check frontend/app/mrln-sky.js
+          node --check frontend/app/spacebg.js
+          node --check frontend/app/backdrop-bake-worker.js
           node --check frontend/app/industrialtextures.js
           node --check frontend/js/assets.js
           node --check frontend/app/skinstage.js
