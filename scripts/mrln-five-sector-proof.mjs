@@ -38,9 +38,20 @@ try{
     const doc=World.stationDoc();
     return {rooms:doc.order.filter(id=>doc.rooms[id] && doc.rooms[id].kind!=='corridor').length,corridors:doc.order.filter(id=>doc.rooms[id] && doc.rooms[id].kind==='corridor').length,preset:doc.meta.templateId,sky:SpaceBG.getBackdrop(),skyReady:SpaceBG._dbgBakeState().ready,novas:(typeof MRLNCrewArt!=='undefined'&&MRLNCrewArt.skinIds.length===24&&MRLNCrewArt.skinIds.includes('mrln_nova'))};
   })()`);
-  if(!result||result.rooms!==5||result.preset!=='mrln-studio'||!result.novas||result.sky!=='mrln-ion-veil'||!result.skyReady)
+  if(!result||result.rooms!==5||result.preset!=='mrln-studio'||!result.novas||result.sky!=='mrln-ion-veil')
     throw Error('unexpected MRLN station: '+JSON.stringify(result));
-  await sleep(1000);
+  // The sky is baked in a real OffscreenCanvas worker. Its completion time
+  // varies significantly on shared CI runners; a 3.2s wall-clock sleep is
+  // not evidence the sky was painted. Poll actual renderer state before proof.
+  let bakeState=null;
+  for(let attempt=0;attempt<48;attempt++){
+    bakeState=await evalJS(cdp,'SpaceBG._dbgBakeState()');
+    if(bakeState&&bakeState.ready&&bakeState.id==='mrln-ion-veil')break;
+    await sleep(500);
+  }
+  if(!bakeState||!bakeState.ready||bakeState.id!=='mrln-ion-veil')
+    throw Error('Ion Veil backdrop failed to finish actual rendering: '+JSON.stringify(bakeState));
+  await sleep(700);
   // Hold the completed visual frame without implying any work actually ran.
   await evalJS(cdp,'World.stop(); true');
   await capture(cdp,out,'five-sector');
