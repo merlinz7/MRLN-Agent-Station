@@ -77,7 +77,7 @@
      ends in show(<screen>) (splash / game / connect / future / recovery), which clears this veil — so a
      returning Commander never flashes the CREATE console on the way to their station (the old bug: #screen-connect
      carried the static .active). Truthful telemetry: it asserts nothing about state — just "connecting". -->
-<section id="screen-boot" class="screen active" aria-label="StarNet booting" aria-hidden="true">
+<section id="screen-boot" class="screen active" aria-label="MRLN Agent Station booting" aria-hidden="true">
   <div class="boot-veil">
     <div class="boot-mark">◆ MRLN AGENT STATION</div>
     <div class="boot-line">establishing local uplink<span class="boot-dots"></span></div>
@@ -89,7 +89,7 @@
      perspective grid floor, the big phosphor wordmark, and a blinking PRESS ANY KEY. Any key / click /
      tap advances into CREATE YOUR OVERSEER (app.js showSplash()). Resume/recovery paths never route
      here — a returning Commander lands in the station or the RESUME console, not a title card. -->
-<section id="screen-splash" class="screen" aria-label="StarNet boot screen">
+<section id="screen-splash" class="screen" aria-label="MRLN Agent Station boot screen">
   <canvas id="sp-stars" aria-hidden="true"></canvas>
   <div class="sp-nebula" aria-hidden="true"></div>
   <div class="sp-floor" aria-hidden="true"><div class="sp-grid"></div></div>
@@ -118,7 +118,7 @@
     <span class="cc-bracket cc-bl">└</span><span class="cc-bracket cc-br">┘</span>
 
     <header class="cc-console-head ov-head">
-      <div class="cc-titlebar"><span class="ov-wordmark" role="img" aria-label="StarNet"></span><span id="cc-mode" class="cc-tb-mode">GENESIS</span><span class="cc-tb-phosphor"><span class="cc-tb-plabel">COLOR</span><span id="phosphor-swatches" class="phosphor-swatches" role="group" aria-label="Console phosphor tint"></span></span></div>
+      <div class="cc-titlebar"><span class="ov-wordmark" role="img" aria-label="MRLN Agent Station"></span><span id="cc-mode" class="cc-tb-mode">GENESIS</span><span class="cc-tb-phosphor"><span class="cc-tb-plabel">COLOR</span><span id="phosphor-swatches" class="phosphor-swatches" role="group" aria-label="Console phosphor tint"></span></span></div>
       <div class="cc-title-row ov-title-row">
         <h2 id="cc-title">Create your Overseer</h2>
         <span id="cc-sub" class="ov-sub">the first mind you wake is your <b>OVERSEER</b> — it runs the station and recruits every agent after it.</span>
@@ -411,13 +411,13 @@
     <span class="cc-bracket cc-tl">┌</span><span class="cc-bracket cc-tr">┐</span>
     <span class="cc-bracket cc-bl">└</span><span class="cc-bracket cc-br">┘</span>
     <header class="cc-console-head ov-head">
-      <div class="cc-titlebar"><span class="cc-tb-tag">STARNET</span><span class="cc-tb-rule"></span><span class="cc-tb-mode">UPDATE REQUIRED</span><span class="cc-tb-rec">● HOLD</span></div>
+      <div class="cc-titlebar"><span class="cc-tb-tag">MRLN</span><span class="cc-tb-rule"></span><span class="cc-tb-mode">UPDATE REQUIRED</span><span class="cc-tb-rec">● HOLD</span></div>
       <div class="cc-title-row ov-title-row">
-        <h2>▮ SAVE FROM A NEWER STARNET</h2>
+        <h2>▮ SAVE FROM A NEWER MRLN</h2>
         <span id="future-sub" class="ov-sub"></span>
       </div>
       <div class="ov-recovery" role="alert">
-        Your station was last saved by a <b>newer version of StarNet</b>. This build can't read that save
+        Your station was last saved by a <b>newer version of MRLN Agent Station</b>. This build can't read that save
         without risking damage to it, so it's being kept <b>untouched</b>. Update the app to continue — your
         agent, history and progress are safe.
       </div>
@@ -445,7 +445,7 @@
     <span class="cc-bracket cc-tl">┌</span><span class="cc-bracket cc-tr">┐</span>
     <span class="cc-bracket cc-bl">└</span><span class="cc-bracket cc-br">┘</span>
     <header class="cc-console-head ov-head">
-      <div class="cc-titlebar"><span class="cc-tb-tag">STARNET</span><span class="cc-tb-rule"></span><span class="cc-tb-mode">SAVE DAMAGED</span><span class="cc-tb-rec">● HOLD</span></div>
+      <div class="cc-titlebar"><span class="cc-tb-tag">MRLN</span><span class="cc-tb-rule"></span><span class="cc-tb-mode">SAVE DAMAGED</span><span class="cc-tb-rec">● HOLD</span></div>
       <div class="cc-title-row ov-title-row">
         <h2>▮ YOUR SAVE WAS DAMAGED</h2>
         <span class="ov-sub"></span>
@@ -479,15 +479,15 @@
     <span class="cc-bracket cc-tl">┌</span><span class="cc-bracket cc-tr">┐</span>
     <span class="cc-bracket cc-bl">└</span><span class="cc-bracket cc-br">┘</span>
     <header class="cc-console-head ov-head">
-      <div class="cc-titlebar"><span class="cc-tb-tag">STARNET</span><span class="cc-tb-rule"></span><span class="cc-tb-mode">RECONNECTING</span><span class="cc-tb-rec">● HOLD</span></div>
+      <div class="cc-titlebar"><span class="cc-tb-tag">MRLN</span><span class="cc-tb-rule"></span><span class="cc-tb-mode">RECONNECTING</span><span class="cc-tb-rec">● HOLD</span></div>
       <div class="cc-title-row ov-title-row">
         <h2>▮ STATION DATA UNREACHABLE</h2>
         <span id="unreachable-sub" class="ov-sub"></span>
       </div>
       <div class="ov-recovery" role="alert">
-        StarNet <b>could not read your saved station</b> — the local station service didn't answer.
+        MRLN Agent Station <b>could not read your saved station</b> — the local station service didn't answer.
         Your save has <b>not</b> been deleted or touched; it just can't be reached right now.
-        StarNet is retrying automatically and will resume your station the moment it reconnects.
+        MRLN is retrying automatically and will resume your station the moment it reconnects.
         If it cannot recover, <b>START COMPLETELY FRESH</b> safely sets the old local station aside.
         It does not remove your StarNet account link or purchased credits.
       </div>
@@ -517,13 +517,13 @@
     <span class="cc-bracket cc-tl">┌</span><span class="cc-bracket cc-tr">┐</span>
     <span class="cc-bracket cc-bl">└</span><span class="cc-bracket cc-br">┘</span>
     <header class="cc-console-head ov-head">
-      <div class="cc-titlebar"><span class="cc-tb-tag">STARNET</span><span class="cc-tb-rule"></span><span class="cc-tb-mode">RECOVERY MODE</span><span class="cc-tb-rec">● READ ONLY</span></div>
+      <div class="cc-titlebar"><span class="cc-tb-tag">MRLN</span><span class="cc-tb-rule"></span><span class="cc-tb-mode">RECOVERY MODE</span><span class="cc-tb-rec">● READ ONLY</span></div>
       <div class="cc-title-row ov-title-row">
         <h2>▮ PRIOR STATION DATA FOUND</h2>
         <span class="ov-sub">new-station onboarding is paused</span>
       </div>
       <div class="ov-recovery" role="alert">
-        StarNet did not find a readable active save, but it <b>did find evidence of an earlier station</b>.
+        MRLN did not find a readable active save, but it <b>did find evidence of an earlier station</b>.
         Nothing has been erased. Recovery Mode prevents a new station from being created over that evidence.
         <div id="lineage-evidence" style="margin-top:12px;word-break:break-word"></div>
       </div>
@@ -710,7 +710,7 @@
         <div id="model-dock-list" class="model-dock-list scrolly" role="listbox" aria-label="Available models"></div>
         <div class="model-dock-foot">
           <button id="model-dock-refresh" type="button">REFRESH</button>
-          <a id="model-dock-subscription" href="https://www.starnetos.com/pricing" target="_blank" rel="noopener noreferrer" aria-label="StarNet subscription (opens in your browser)"><span>STARNET SUBSCRIPTION</span><span aria-hidden="true">↗</span></a>
+          <a id="model-dock-subscription" href="https://www.starnetos.com/pricing" target="_blank" rel="noopener noreferrer" aria-label="External StarNet subscription (opens in your browser)"><span>EXTERNAL STARNET ACCOUNT</span><span aria-hidden="true">↗</span></a>
         </div>
       </div>
       <button id="voice-toggle" class="voice-toggle" title="agent voice" aria-label="Agent voice" aria-pressed="true"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.2 6.1h2.1L7.7 3.3v9.4L4.3 9.9H2.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="miter"/><g fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10.3 6a3.2 3.2 0 0 1 0 4"/><path d="M12.4 4a6.2 6.2 0 0 1 0 8"/></g></svg></button>
