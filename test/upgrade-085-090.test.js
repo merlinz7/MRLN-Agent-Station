@@ -194,8 +194,8 @@ A.ok(/if let Err\(e\) = install_result[\s\S]*?\*guard = Some\(update\)/.test(mai
   'a failed native update restores the verified pending update for retry');
 A.ok(/UpdateInstallEvent::Installing[\s\S]*?app\.restart\(\)/.test(mainRs),
   'a successful macOS/non-Windows update reaches the explicit restart path');
-A.ok(/const KEYCHAIN_SERVICE: &str = "ai\.skynet\.harness"/.test(credentialsRs),
-  'candidate keeps the released OS keychain service namespace');
+A.ok(/const KEYCHAIN_SERVICE: &str = "com\\.mrln\\.agentstation"/.test(credentialsRs),
+  'fork uses a separate MRLN keychain service; original StarNet credentials are not imported');
 A.ok(/"openrouter" => KEYCHAIN_ACCOUNT\.to_string\(\)/.test(credentialsRs) && /format!\("provider:\{id\}"\)/.test(credentialsRs),
   'candidate keeps the released provider credential account references');
 A.ok(/format!\("channel:\{channel\}"\)/.test(credentialsRs) && /read_channel_token\(channel\)[\s\S]*?keychain_has_it[\s\S]*?remove\("token"\)/.test(credentialsRs),
