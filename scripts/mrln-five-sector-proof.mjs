@@ -35,7 +35,7 @@ try{
     World.loadStation(active);
     await new Promise(resolve=>setTimeout(resolve,2200));
     const doc=World.stationDoc();
-    return {rooms:doc.order.length,preset:doc.meta.templateId,novas:(typeof MRLNCrewArt!=='undefined'&&MRLNCrewArt.skinIds.includes('mrln_nova'))};
+    return {rooms:doc.order.filter(id=>doc.rooms[id] && doc.rooms[id].kind!=='corridor').length,corridors:doc.order.filter(id=>doc.rooms[id] && doc.rooms[id].kind==='corridor').length,preset:doc.meta.templateId,novas:(typeof MRLNCrewArt!=='undefined'&&MRLNCrewArt.skinIds.includes('mrln_nova'))};
   })()`);
   if(!result||result.rooms!==5||result.preset!=='mrln-studio'||!result.novas)
     throw Error('unexpected MRLN station: '+JSON.stringify(result));
@@ -53,7 +53,8 @@ finally{
   try{cdp?.ws.close();}catch{}
   try{chrome?.proc.kill('SIGKILL');}catch{}
   try{sidecar?.kill('SIGKILL');}catch{}
-  fs.rmSync(temp,{recursive:true,force:true});
+  try { fs.rmSync(temp,{recursive:true,force:true,maxRetries:10,retryDelay:300}); }
+  catch (cleanupError) { console.warn('Temporary Chrome profile cleanup deferred:',cleanupError.message); }
 }
 console.log(JSON.stringify(report));
 process.exit(code);
