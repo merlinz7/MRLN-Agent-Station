@@ -14,6 +14,8 @@ on:
       - 'frontend/js/assets.js'
       - 'frontend/app/stationtemplates.js'
       - 'frontend/index.html'
+      - 'frontend/app/app.js'
+      - 'test/mrln-brand-integration.test.js'
       - 'test/mrln-crew-art.test.js'
       - '.github/workflows/mrln-crew.yml'
   workflow_dispatch:
@@ -32,6 +34,7 @@ jobs:
         run: |
           node test/mrln-crew-art.test.js
           node test/mrln-materials.test.js
+          node test/mrln-brand-integration.test.js
           node test/datareset.test.js
       - name: Inherited media audit (internal report, public release remains blocked)
         run: node scripts/mrln-release-assets.mjs
