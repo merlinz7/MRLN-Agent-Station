@@ -259,6 +259,8 @@ module.exports = (async () => {
     A.eq(seen.pop().think, false, 'a Qwen 3.5 2B Q4 worker disables default thinking on actual tool tasks');
     await collect(thinker(), { model: 'qwen3.5:2b', messages: msg, tools: TOOLS, isTask: true });
     A.eq(seen.pop().think, false, 'the canonical Qwen 3.5 2B alias gets the same fast lane');
+    await collect(thinker(), { model: 'qwen3.5:2b-q4_K_M', messages: msg, tools: TOOLS, isTask: true, reasoningEffort: 'minimal' });
+    A.eq(seen.pop().think, false, 'the minimal effort shown by the real Qwen 2B worker maps to native think:false');
     await collect(thinker(), { model: 'qwen3.5:4b', messages: msg, tools: TOOLS, isTask: true });
     A.eq(seen.pop().think, undefined, 'other Qwen sizes retain their default thinking');
     await collect(thinker(), { model: 'qwen3.5:2b-q4_K_M', messages: msg, tools: TOOLS, isTask: true, reasoningEffort: 'high' });
