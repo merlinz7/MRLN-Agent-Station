@@ -546,7 +546,20 @@
            next "hello" waited 26s behind them. Only a model Ollama says can think is told not to, and only here:
            Commander turns and tasks keep the model's own default. */
         const background = !(req.tools && req.tools.length) && typeof req.isTask !== 'boolean';
-        const think = (background && facts && facts.supportsReasoning === true) ? false : undefined;
+        /* MRLN's measured qwen3.5:2b Q4 smoke: the model replied in 1.9 s with think:false,
+           but its default-thinking task spent 92 s planning without completing the test.
+           Keep this narrowly scoped to the tested 2B aliases; all other models retain their
+           original task behavior. Explicit medium/high remain available; on this model\n           minimal maps to non-thinking, matching Ollama's boolean native switch. */
+        const quickQwen2b = /^qwen3\.5:2b(?:-q4_k_m)?$/i.test(String(req.model || '').trim());
+        const effort = String(requestedEffort).trim().toLowerCase();
+        const explicitOff = effort === 'none' || effort === 'off';
+        // This station's Qwen worker used effort "minimal" on the failed run. Ollama native supports
+        // a boolean think toggle, not a graded minimal setting; map this *model's* minimal to off.
+        // In the native translator body.reasoning_effort wins over wire.think, so normalize it here.
+        const quickNonThinking = quickQwen2b && (!effort || effort === 'minimal' || explicitOff);
+        if (quickNonThinking && body.reasoning_effort === 'minimal') body.reasoning_effort = 'none';
+        const disableThinking = background || explicitOff || quickNonThinking;
+        const think = (disableThinking && facts && facts.supportsReasoning === true) ? false : undefined;
         wire = { native: true, modelMax, think, numCtx: ollamaNative.pickNumCtx(need, { pinned: pinnedCtx, ceiling: ctxCeiling, modelMax, floor: ollamaWindow(nativeBase, req.model) }) };
       }
       let res;

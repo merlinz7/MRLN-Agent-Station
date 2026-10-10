@@ -254,6 +254,19 @@ module.exports = (async () => {
     A.eq(seen.pop().think, undefined, 'a task keeps the model default');
     await collect(thinker(), { model: 'q', messages: msg, tools: TOOLS });
     A.eq(seen.pop().think, undefined, 'an internal run WITH tools keeps the model default');
+    // Qwen 3.5 2B's tested non-thinking fast lane is model-specific, including its Q4-K-M Ollama tag.
+    await collect(thinker(), { model: 'qwen3.5:2b-q4_K_M', messages: msg, tools: TOOLS, isTask: true });
+    A.eq(seen.pop().think, false, 'a Qwen 3.5 2B Q4 worker disables default thinking on actual tool tasks');
+    await collect(thinker(), { model: 'qwen3.5:2b', messages: msg, tools: TOOLS, isTask: true });
+    A.eq(seen.pop().think, false, 'the canonical Qwen 3.5 2B alias gets the same fast lane');
+    await collect(thinker(), { model: 'qwen3.5:2b-q4_K_M', messages: msg, tools: TOOLS, isTask: true, reasoningEffort: 'minimal' });
+    A.eq(seen.pop().think, false, 'the minimal effort shown by the real Qwen 2B worker maps to native think:false');
+    await collect(thinker(), { model: 'qwen3.5:4b', messages: msg, tools: TOOLS, isTask: true });
+    A.eq(seen.pop().think, undefined, 'other Qwen sizes retain their default thinking');
+    await collect(thinker(), { model: 'qwen3.5:2b-q4_K_M', messages: msg, tools: TOOLS, isTask: true, reasoningEffort: 'high' });
+    A.ok(seen.pop().think !== false, 'an explicitly requested reasoning level is never forced off');
+    await collect(thinker(), { model: 'qwen3.5:2b-q4_K_M', messages: msg, tools: TOOLS, isTask: true, reasoningEffort: 'none' });
+    A.eq(seen.pop().think, false, 'an explicit none also disables thinking for a native Ollama worker');
     await collect(makeOpenAICompatibleProvider({ fetch: mkFetch(['completion', 'tools', 'thinking']), baseUrl: 'http://think.test:11434/v1', nativeOllama: true, sendReasoningEffort: true, reasoningEffort: 'high' }), { model: 'q', messages: msg });
     A.eq(seen.pop().think, true, 'an explicit reasoning effort still wins on a background call');
     await collect(makeOpenAICompatibleProvider({ fetch: mkFetch(['completion', 'tools']), baseUrl: 'http://nothink.test:11434/v1', nativeOllama: true }), { model: 'q', messages: msg });
