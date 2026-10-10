@@ -2064,10 +2064,17 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     // A retired saved ID can alias an approved catalog entry without becoming an extra tile.
     const cur = (a && a.skin && Object.keys(skins).find(id => skins[id] === skins[a.skin]))
       || (typeof DATA !== 'undefined' ? DATA.DEFAULT_SKIN : '');
-    const thumbs = Object.keys(skins).map(id => {
+    // First-party MRLN characters use generated SVG frames rather than PNG paths.
+    // Always show them FIRST in the dossier without mutating an existing agent's
+    // selected skin or hiding any saved legacy StarNet choices.
+    const own = (typeof MRLNCrewArt !== 'undefined') ? MRLNCrewArt.skinIds.filter(id => !!skins[id]) : [];
+    const ids = own.concat(Object.keys(skins).filter(id => !own.includes(id)));
+    const thumbs = ids.map(id => {
       const sk = skins[id];
+      const original = typeof MRLNCrewArt !== 'undefined' && MRLNCrewArt.isOriginalSet(sk.set);
+      const image = original ? MRLNCrewArt.still(sk.set) : 'assets/sprites/' + sk.set + '/rot_south.png';
       return '<button type="button" class="skin-thumb ag-skin-thumb' + (id === cur ? ' sel' : '') + '" data-skin="' + esc(id) + '" title="' + esc(sk.name || id) + '" aria-label="' + esc(sk.name || id) + '" aria-pressed="' + (id === cur ? 'true' : 'false') + '">' +
-        '<img src="assets/sprites/' + esc(sk.set) + '/rot_south.png" alt="' + esc(sk.name || id) + '" draggable="false"></button>';
+        '<img src="' + esc(image) + '" alt="' + esc(sk.name || id) + '" draggable="false"></button>';
     }).join('');
     // a 44px still of a chunky sprite is unidentifiable, so the picker sits beside a LIVE stage (shared
     // SkinStage) that plays the picked — or merely hovered — skin's real walk cycle big enough to judge.

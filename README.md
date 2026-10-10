@@ -25,7 +25,7 @@ For a live screenshot, consult the independent **[real-station visual proof work
 
 - The upstream StarNet multi-agent runtime, local tools, agent communication, persistence, and station simulation.
 - MRLN logo, UI colors and Windows application identity, with a separate app data location and OS keychain namespace.
-- A set of **24 original MRLN character variants** across six archetypes (eight-direction walking animation, work, speech and idle states), integrated with the existing picker and world renderer.
+- A set of **40 original MRLN character variants** across six archetypes (eight-direction walking animation, work, speech and idle states), integrated with the existing picker and world renderer.
 - Procedurally generated MRLN floor and wall materials and a five-sector studio template.
 - **MRLN · ION VEIL**: original parallax space background with cyan/violet/amber nebula, stars and survey lattice, integrated into the real station and backdrop selector. New stations default to Ion Veil; saved stations retain their own selected sky.
 - A disabled automatic updater: MRLN must **not** install updates from StarNet's separate release feed.

@@ -11,15 +11,20 @@ const source = fs.readFileSync(path.join(__dirname,'../frontend/app/mrln-crew-ar
 const context = {module:{exports:{}}, DATA:{SKINS:{},DEFAULT_SKIN:'blank'}};
 vm.runInNewContext(source,context,{filename:'mrln-crew-art.js'});
 const crew=context.module.exports;
-assert.equal(crew.CHARACTERS.length,24);
-assert.equal(crew.BASE_CHARACTERS.length,6);
-assert.equal(new Set(crew.skinIds).size,24);
+assert.equal(crew.CHARACTERS.length,40);
+assert.equal(crew.BASE_CHARACTERS.length,10);
+assert.equal(new Set(crew.skinIds).size,40);
 assert.equal(crew.DIRECTIONS.length,8);
 assert.equal(context.DATA.DEFAULT_SKIN,'mrln_nova');
-assert.equal(crew.skinIds.length,24);
+assert.equal(crew.skinIds.length,40);
 assert.ok(crew.skinIds.includes('mrln_nova_vanguard'));
 assert.ok(crew.skinIds.includes('mrln_scout_specter'));
 assert.ok(crew.skinIds.includes('mrln_relay_explorer'));
+for (const name of ['atlas','pixel','prism','signal']) {
+  assert.ok(crew.skinIds.includes('mrln_'+name), 'new studio role '+name);
+  for (const variant of ['vanguard','specter','explorer'])
+    assert.ok(crew.skinIds.includes('mrln_'+name+'_'+variant));
+}
 const manifest={sprites:{}};
 assert.equal(crew.install(manifest),true);
 for(const c of crew.CHARACTERS){
@@ -39,5 +44,5 @@ for(const c of crew.CHARACTERS){
     }
   }
 }
-assert.equal(Object.keys(manifest.sprites).length,24*8*6);
-console.log('MRLN original crew generator: 24 skins, 1152 animated tracks verified');
+assert.equal(Object.keys(manifest.sprites).length,40*8*6);
+console.log('MRLN original crew generator: 40 skins, 1920 animated tracks verified');
