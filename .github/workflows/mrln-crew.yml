@@ -20,6 +20,11 @@ on:
       - 'frontend/index.html'
       - 'frontend/app/app.js'
       - 'test/mrln-brand-integration.test.js'
+      - 'test/mrln-distribution-gate.test.js'
+      - 'test/mrln-product-claims.test.js'
+      - 'scripts/mrln-release-assets.mjs'
+      - 'test/qa-product-perfect-claims.test.js'
+      - 'test/t5-public-distribution.test.js'
       - 'test/mrln-crew-art.test.js'
       - '.github/workflows/mrln-crew.yml'
   workflow_dispatch:
@@ -40,6 +45,8 @@ jobs:
           node test/mrln-materials.test.js
           node test/mrln-sky.test.js
           node test/mrln-brand-integration.test.js
+          node test/mrln-distribution-gate.test.js
+          node test/mrln-product-claims.test.js
           node test/datareset.test.js
       - name: Inherited media audit (internal report, public release remains blocked)
         run: node scripts/mrln-release-assets.mjs
@@ -56,6 +63,8 @@ jobs:
       - name: JavaScript syntax
         run: |
           node --check scripts/mrln-release-assets.mjs
+          node --check test/mrln-distribution-gate.test.js
+          node --check test/mrln-product-claims.test.js
           node --check frontend/app/mrln-crew-art.js
           node --check frontend/app/mrln-materials.js
           node --check frontend/app/mrln-sky.js
