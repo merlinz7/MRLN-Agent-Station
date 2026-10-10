@@ -781,7 +781,7 @@ const SPRITES = (() => {
   }
 
   function loadTrack(track, paths) {
-    return Promise.all(paths.map(p => loadImage('assets/sprites/' + p))).then(imgs => {
+    return Promise.all(paths.map(p => loadImage(p.startsWith('data:image/svg+xml,') || p.startsWith('data:image/svg+xml;charset=utf-8,') ? p : 'assets/sprites/' + p))).then(imgs => {
       const ok = imgs.filter(Boolean);
       if (ok.length) frames[track] = ok;
       return ok.length;
@@ -822,6 +822,7 @@ const SPRITES = (() => {
       if (!resp.ok) return;
       const man = await resp.json();
       if(typeof SkinStudy!=='undefined')await SkinStudy.install(man);
+      if (typeof MRLNCrewArt !== 'undefined') MRLNCrewArt.install(man);
       tracksBySet = SpriteLoadPlan.groupTracks(man.sprites);
       // ready when the DEFAULT skin's base pose loaded (the old `minion` astronaut set
       // was retired in favour of DATA.SKINS — gating on it left ready=false forever, so
