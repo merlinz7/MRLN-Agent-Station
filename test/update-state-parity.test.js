@@ -294,9 +294,16 @@ function loadSaveModule() {
   const pageMatch = updatesSrc.match(/RELEASES_PAGE = '([^']+)'/);
   A.ok(pageMatch, 'updates.js declares RELEASES_PAGE');
   const slugOf = u => (String(u).match(/github\.com\/([^/]+\/[^/]+)\//) || [])[1];
-  A.eq(slugOf(pageMatch[1] + '/'), slugOf(endpoint),
-    'manual-fallback releases page and the baked updater endpoint point at the SAME owner/repo');
-  A.ok(/\/releases\/latest$/.test(pageMatch[1]), 'manual fallback points at /releases/latest (never a pinned tag)');
+  if (conf.identifier === 'com.mrln.agentstation') {
+    A.eq(endpoint, undefined, 'MRLN has no inherited public automatic updater endpoint');
+    A.eq(pageMatch[1], 'https://github.com/merlinz7/MRLN-Agent-Station/actions/workflows/mrln-windows-build.yml',
+      'manual fallback reaches the actual internal MRLN Windows builds');
+    A.ok(/const MANUAL_ONLY = true/.test(updatesSrc), 'MRLN Update Center is explicitly manual-only');
+  } else {
+    A.eq(slugOf(pageMatch[1] + '/'), slugOf(endpoint),
+      'manual-fallback releases page and the baked updater endpoint point at the SAME owner/repo');
+    A.ok(/\/releases\/latest$/.test(pageMatch[1]), 'manual fallback points at /releases/latest (never a pinned tag)');
+  }
 }
 
 A.report('update-state-parity');
