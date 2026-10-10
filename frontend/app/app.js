@@ -2687,7 +2687,7 @@ const App = (() => {
     // 10th behind nine characters. Data order (data-shim.js) is untouched; this is purely the render order.
     const def = DATA.DEFAULT_SKIN;
     const inFamily = id => id === def || id.indexOf(def + '_') === 0;
-    const ids = Object.keys(DATA.SKINS);
+    const ids = (typeof MRLNCrewArt !== 'undefined') ? MRLNCrewArt.skinIds : Object.keys(DATA.SKINS);
     const ordered = [def, ...ids.filter(id => id !== def && inFamily(id)), ...ids.filter(id => !inFamily(id))].filter(id => DATA.SKINS[id]);
     // stage handle (assigned by the mount below): drive THIS stage, not the module-level shortcut, which
     // belongs to whichever picker mounted last once more than one is on screen.
@@ -2699,7 +2699,8 @@ const App = (() => {
       b.className = 'skin-thumb' + (id === pickedSkin ? ' sel' : '');
       b.title = sk.name || id; b.setAttribute('aria-pressed', String(id === pickedSkin));
       const img = document.createElement('img');
-      img.src = 'assets/sprites/' + sk.set + '/rot_south.png';
+      img.src = (typeof MRLNCrewArt !== 'undefined' && MRLNCrewArt.isOriginalSet(sk.set))
+        ? MRLNCrewArt.still(sk.set) : 'assets/sprites/' + sk.set + '/rot_south.png';
       img.alt = sk.name || id; img.draggable = false;
       b.appendChild(img);
       b.onclick = () => {
