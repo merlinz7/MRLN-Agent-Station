@@ -6,7 +6,9 @@ const remasterContext={module:{exports:{}},IndustrialTextures:{enabled:()=>true,
 require('node:vm').runInNewContext(require('node:fs').readFileSync(require.resolve('../frontend/app/propsprites.js'),'utf8'),remasterContext);
 const T=require('../frontend/app/stationtemplates.js');
 const approved=require('./fixtures/station-default-approved.json');
-assert.equal(T.catalog.length,7); // five work presets (each with a ready line) and two look-only presets
+assert.equal(T.catalog.length,8); // five guided work presets and three look-only presets, including MRLN Agent Studio
+assert.equal(T.catalog.filter(c=>c.group==='look').length,3,'three appearance presets are available');
+assert.ok(T.catalog.some(c=>c.id==='mrln-studio' && c.group==='look' && c.rooms===5),'MRLN five-room station remains selectable');
 assert.deepEqual(T.catalog.filter(c=>c.group==='work').map(c=>c.purpose).sort(),['code','general','ops','research','write'],'one work preset per onboarding purpose');
 for(const P of [legacySprites,remasterContext.module.exports])for(const item of T.catalog) {
   const doc=T.build(item.id,M,P,1000),s=M.create(doc);
