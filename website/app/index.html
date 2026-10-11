@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MRLN Agent Station (demo)</title>
+<title>MRLN Agent Station</title>
 <!-- VT323 — THE STARNET FONT — has exactly ONE source: the local @font-face in css/style.css
      (frontend/assets/fonts/vt323.woff2, SIL OFL, U+0-10FFFF — the whole range, no subsets).
      There is NO remote font link here and there must never be one again. The Google Fonts
@@ -17,7 +17,6 @@
 <link rel="preload" href="assets/sprites/approved_android/rot_south.png" as="image" fetchpriority="high">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/app.css">
-<link rel="stylesheet" href="css/mrln-brand.css">
 <link rel="stylesheet" href="css/comms.css">
 <link rel="stylesheet" href="css/marketplace.css">
 <link rel="stylesheet" href="css/menu-glass.css">
@@ -68,6 +67,7 @@
 
 <link rel="stylesheet" href="css/titlebar.css"><!-- custom window chrome (Windows desktop shell): themed titlebar + MIN/MAX/CLOSE; inert unless body.sn-chrome (titlebar.js) -->
 
+<link rel="stylesheet" href="css/mrln-brand.css">
 </head>
 <body class="theme-amber glass-demo">
 
@@ -79,7 +79,7 @@
      carried the static .active). Truthful telemetry: it asserts nothing about state — just "connecting". -->
 <section id="screen-boot" class="screen active" aria-label="MRLN Agent Station booting" aria-hidden="true">
   <div class="boot-veil">
-    <div class="boot-mark">◆ STARNET</div>
+    <div class="boot-mark">◆ MRLN AGENT STATION</div>
     <div class="boot-line">establishing local uplink<span class="boot-dots"></span></div>
   </div>
 </section>
@@ -118,7 +118,7 @@
     <span class="cc-bracket cc-bl">└</span><span class="cc-bracket cc-br">┘</span>
 
     <header class="cc-console-head ov-head">
-      <div class="cc-titlebar"><span class="ov-wordmark" role="img" aria-label="StarNet"></span><span id="cc-mode" class="cc-tb-mode">GENESIS</span><span class="cc-tb-phosphor"><span class="cc-tb-plabel">COLOR</span><span id="phosphor-swatches" class="phosphor-swatches" role="group" aria-label="Console phosphor tint"></span></span></div>
+      <div class="cc-titlebar"><span class="ov-wordmark" role="img" aria-label="MRLN Agent Station"></span><span id="cc-mode" class="cc-tb-mode">GENESIS</span><span class="cc-tb-phosphor"><span class="cc-tb-plabel">COLOR</span><span id="phosphor-swatches" class="phosphor-swatches" role="group" aria-label="Console phosphor tint"></span></span></div>
       <div class="cc-title-row ov-title-row">
         <h2 id="cc-title">Create your Overseer</h2>
         <span id="cc-sub" class="ov-sub">the first mind you wake is your <b>OVERSEER</b> — it runs the station and recruits every agent after it.</span>
@@ -189,7 +189,7 @@
       <div class="ov-cfg ov-col-brain" id="ov-brain">
         <div class="ov-step"><b>03</b> THE BRAIN <span class="ov-req">REQUIRED</span></div>
         <div class="ov-field ov-field-brain">
-          <div class="ov-section-heading" id="ov-provider-intro"><h3>Connect a brain</h3><p>Start with StarNet, or use a provider you already have.</p></div>
+          <div class="ov-section-heading" id="ov-provider-intro"><h3>Connect a brain</h3><p>Use a local Ollama model or connect your own model provider.</p></div>
           <!-- BEGINNER FUNNEL: lead with the no-API-key path. A ChatGPT Plus/Pro login (Codex OAuth) needs
                no key at all, so it's the recommended default and sits first; BYOK (OpenRouter etc.) stays a
                fully visible one-click alternative for anyone who already has a key. -->
@@ -209,8 +209,8 @@
               <button class="prov prov-hero hidden" data-prov="starnet" aria-pressed="false">
                 <span class="prov-hero-row">
                   <span class="prov-hero-body">
-                    <span class="prov-hero-title"><span class="prov-hero-prefix">START WITH</span><span class="ov-wordmark" role="img" aria-label="StarNet"></span></span>
-                    <span class="prov-hero-sub">Subscribe and start. No API keys.</span>
+                    <span class="prov-hero-title"><span class="prov-hero-prefix">EXTERNAL PROVIDER</span><span class="ov-wordmark" role="img" aria-label="External StarNet service"></span></span>
+                    <span class="prov-hero-sub">A third-party StarNet account, not an MRLN subscription.</span>
                   </span>
                   <span class="prov-hero-arrow" aria-hidden="true">→</span>
                 </span>
@@ -413,11 +413,11 @@
     <header class="cc-console-head ov-head">
       <div class="cc-titlebar"><span class="cc-tb-tag">MRLN</span><span class="cc-tb-rule"></span><span class="cc-tb-mode">UPDATE REQUIRED</span><span class="cc-tb-rec">● HOLD</span></div>
       <div class="cc-title-row ov-title-row">
-        <h2>▮ SAVE FROM A NEWER STARNET</h2>
+        <h2>▮ SAVE FROM A NEWER MRLN</h2>
         <span id="future-sub" class="ov-sub"></span>
       </div>
       <div class="ov-recovery" role="alert">
-        Your station was last saved by a <b>newer version of StarNet</b>. This build can't read that save
+        Your station was last saved by a <b>newer version of MRLN Agent Station</b>. This build can't read that save
         without risking damage to it, so it's being kept <b>untouched</b>. Update the app to continue — your
         agent, history and progress are safe.
       </div>
@@ -428,7 +428,7 @@
         <span class="ov-foot-cap">＋ your save is intact — this build simply predates it</span>
       </div>
       <div class="connect-actions ov-actions">
-        <button id="btn-future-update" class="btn-xl">⭯ UPDATE STARNET ▸</button>
+        <button id="btn-future-update" class="btn-xl">↗ VIEW MRLN TEST BUILDS</button>
       </div>
     </div>
   </div>
@@ -485,9 +485,9 @@
         <span id="unreachable-sub" class="ov-sub"></span>
       </div>
       <div class="ov-recovery" role="alert">
-        StarNet <b>could not read your saved station</b> — the local station service didn't answer.
+        MRLN Agent Station <b>could not read your saved station</b> — the local station service didn't answer.
         Your save has <b>not</b> been deleted or touched; it just can't be reached right now.
-        StarNet is retrying automatically and will resume your station the moment it reconnects.
+        MRLN is retrying automatically and will resume your station the moment it reconnects.
         If it cannot recover, <b>START COMPLETELY FRESH</b> safely sets the old local station aside.
         It does not remove your StarNet account link or purchased credits.
       </div>
@@ -523,7 +523,7 @@
         <span class="ov-sub">new-station onboarding is paused</span>
       </div>
       <div class="ov-recovery" role="alert">
-        StarNet did not find a readable active save, but it <b>did find evidence of an earlier station</b>.
+        MRLN did not find a readable active save, but it <b>did find evidence of an earlier station</b>.
         Nothing has been erased. Recovery Mode prevents a new station from being created over that evidence.
         <div id="lineage-evidence" style="margin-top:12px;word-break:break-word"></div>
       </div>
@@ -554,7 +554,7 @@
      var(--ph) per theme and stay crisp at any DPR / TEXT SIZE. The SVG is the master art's OWN
      letterforms traced out of its perceived-density field (dev/trace-logo.mjs), NOT a redraw; the
      title screen keeps the full-size master PNG, where the ASCII-digit texture actually reads. -->
-<div id="logo"><span class="logo-img" role="img" aria-label="STARNET"></span></div>
+<div id="logo"><span class="logo-img" role="img" aria-label="MRLN Agent Station"></span></div>
 
 <section id="screen-game" class="screen">
 
@@ -710,7 +710,7 @@
         <div id="model-dock-list" class="model-dock-list scrolly" role="listbox" aria-label="Available models"></div>
         <div class="model-dock-foot">
           <button id="model-dock-refresh" type="button">REFRESH</button>
-          <a id="model-dock-subscription" href="https://www.starnetos.com/pricing" target="_blank" rel="noopener noreferrer" aria-label="StarNet subscription (opens in your browser)"><span>EXTERNAL STARNET ACCOUNT</span><span aria-hidden="true">↗</span></a>
+          <a id="model-dock-subscription" href="https://www.starnetos.com/pricing" target="_blank" rel="noopener noreferrer" aria-label="External StarNet subscription (opens in your browser)"><span>EXTERNAL STARNET ACCOUNT</span><span aria-hidden="true">↗</span></a>
         </div>
       </div>
       <button id="voice-toggle" class="voice-toggle" title="agent voice" aria-label="Agent voice" aria-pressed="true"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.2 6.1h2.1L7.7 3.3v9.4L4.3 9.9H2.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="miter"/><g fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10.3 6a3.2 3.2 0 0 1 0 4"/><path d="M12.4 4a6.2 6.2 0 0 1 0 8"/></g></svg></button>
@@ -829,10 +829,10 @@
 <script src="js/audio.js"></script>
 <script src="js/arcade.js"></script>
 <script src="app/backdrop-bake.js"></script>
+<script src="app/mrln-sky.js"></script><!-- Original MRLN Ion Veil background -->
 <script src="app/spacebg.js"></script><!-- THE VOID: shared deep-space backdrop (dense starfield + nebulas) — one sky for world.js AND build.js so BUILD MODE never jumps the stars -->
 <script src="app/terrain.js"></script><!-- THE GROUND: world-space ground layer for a LANDED station — pans AND zooms with the world (a backdrop must not), drawn under the station bake -->
-<script src="app/mrln-sky.js"></script>
-<script src="app/mrln-materials.js"></script>
+<script src="app/mrln-materials.js"></script><!-- Independent MRLN industrial metal atlas generator -->
 <script src="app/industrialtextures.js"></script>
 <script src="app/authored-prop-content.js"></script>
 <script src="app/authored-service-content.js"></script>
@@ -849,7 +849,7 @@
 <script src="app/propanchor.js"></script>
 <script src="app/waitanchor.js"></script><!-- pure permission-blocked wait-anchor ladder (G4: world.js walks a blocked agent here) -->
 <script src="app/data-shim.js"></script>
-<script src="app/mrln-crew-art.js"></script>
+<script src="app/mrln-crew-art.js"></script><!-- Original MRLN procedural character sprites + default skin registration -->
 <script src="app/skinstage.js"></script>
 <script src="js/sprite-load-plan.js"></script>
 <script src="app/skin-study-tone.js"></script><script src="app/skin-study-preview.js"></script>

@@ -45,6 +45,18 @@ A passing screenshot and 15-second installed-launch test **do not** prove that e
 
 MRLN does not silently import, modify or erase a separate StarNet installation's workspace or credentials. Back up your own MRLN data before experimenting with development builds.
 
+## Run free with a local model
+
+MRLN can use a local model without buying a cloud API key. Install [Ollama](https://ollama.com) on your own Windows computer, open a terminal, and download a compatible model:
+
+```powershell
+ollama pull qwen3:8b
+```
+
+Start Ollama if it is not already running. In MRLN, select **OLLAMA** on the first-run provider screen or open **SETTINGS → PROVIDERS**. The app should only indicate that Ollama is available after checking the local service and its installed models; selecting a provider does not install a model for you. Choose an installed model that supports tool calls, because multi-agent tasks require tools. Check its capabilities with `ollama show qwen3:8b`.
+
+Local models are often smaller than cloud models and may be slower or less capable on complex tasks; they can also require substantial RAM or VRAM. Your results depend on model, hardware, context length and tools. A passing provider check does not prove that an end-to-end agent task will finish successfully. For cloud providers, API usage may incur separate costs.
+
 ## Development
 
 This repository contains the original multi-component project: JavaScript/Node.js sidecar, browser frontend and Tauri/Rust native desktop shell.

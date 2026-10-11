@@ -12,7 +12,11 @@ const MRLNCrewArt = (() => {
     { id:'mrln_forge', set:'mrln_forge', name:'Forge · Fabrication',suit:'#a76336',trim:'#f2b47f', light:'#ffb15e', dark:'#593648', badge:'#ffe19b', kit:'smith' },
     { id:'mrln_vera',  set:'mrln_vera',  name:'Vera · Validation', suit:'#77579d', trim:'#e4b7ff', light:'#c992ff', dark:'#3c345d', badge:'#8dfbe9', kit:'prism' },
     { id:'mrln_echo',  set:'mrln_echo',  name:'Echo · Archive',    suit:'#9b9950', trim:'#f1eea2', light:'#e9ed91', dark:'#4a564c', badge:'#a0e5ff', kit:'scribe' },
-    { id:'mrln_relay', set:'mrln_relay', name:'Relay · Comms',     suit:'#4a8caa', trim:'#e0f5ff', light:'#8bdcff', dark:'#25416e', badge:'#aaf9e5', kit:'antenna' }
+    { id:'mrln_relay', set:'mrln_relay', name:'Relay · Comms',     suit:'#4a8caa', trim:'#e0f5ff', light:'#8bdcff', dark:'#25416e', badge:'#aaf9e5', kit:'antenna' },
+    { id:'mrln_atlas', set:'mrln_atlas', name:'Atlas · Finance',    suit:'#4b6f8e', trim:'#d0e1ff', light:'#84bbff', dark:'#253750', badge:'#ffcf79', kit:'ledger' },
+    { id:'mrln_pixel', set:'mrln_pixel', name:'Pixel · Creative',  suit:'#9a537f', trim:'#ffd1e9', light:'#ff83c9', dark:'#4c325a', badge:'#ffe88d', kit:'artist' },
+    { id:'mrln_prism', set:'mrln_prism', name:'Prism · Review',    suit:'#4e6c98', trim:'#aee6fb', light:'#b392ff', dark:'#31395e', badge:'#94f6da', kit:'judge' },
+    { id:'mrln_signal', set:'mrln_signal', name:'Signal · Growth', suit:'#3a927b', trim:'#beffda', light:'#7df9ca', dark:'#244f56', badge:'#ffc979', kit:'beacon' }
   ]);
   // Every archetype has four actual outfit silhouettes; variant keys are persisted as skins.
   // This stays a selectable art catalog, not a random-color CSS filter over identical poses.
@@ -84,6 +88,35 @@ const MRLNCrewArt = (() => {
       add(16,7,3,21,line);add(45,7,3,21,line);
       add(15,5,5,5,c.light);add(44,5,5,5,c.light);
       add(16,9,2,16,c.badge);add(46,9,2,16,c.badge);
+    } else if (c.kit === 'ledger') {
+      // Atlas: wide audit pack, projecting ledger rails and asymmetric shoulder safe.
+      add(12,24,11,25,line);add(14,26,8,21,c.dark);
+      add(15,29,5,2,c.badge);add(15,34,5,2,c.light);
+      add(42,28,10,19,line);add(44,30,6,14,c.suit);
+      add(46,32,3,8,c.light);
+      add(23,7,18,7,line);add(25,9,14,3,c.trim);
+    } else if (c.kit === 'artist') {
+      // Pixel: drawing tablet, ink arm and angular illuminated cape tip.
+      add(8,29,15,16,line);add(10,30,12,13,c.dark);
+      add(12,33,8,7,c.light);add(13,35,5,2,c.badge);
+      add(47,9,4,28,line);add(48,11,2,25,c.badge);
+      add(47,8,4,6,metal);add(46,6,6,3,c.light);
+      o.push(poly('20,43 15,55 26,54',c.dark));
+    } else if (c.kit === 'judge') {
+      // Prism QA: split hex shield and mirrored diamond scanners.
+      o.push(poly('12,25 20,19 25,24 23,37 16,40',line));
+      o.push(poly('13,26 20,22 23,26 21,35 16,37',c.light));
+      o.push(poly('39,24 45,19 52,25 49,40 42,37',line));
+      o.push(poly('41,26 45,22 50,26 47,37 43,35',c.badge));
+      add(29,6,6,9,line);add(30,8,4,5,c.trim);
+    } else if (c.kit === 'beacon') {
+      // Signal: angular broadcast dish with compact relay pack, not Relay's paired antennas.
+      o.push(poly('14,6 27,6 24,14 17,14',line));
+      o.push(poly('16,7 25,7 23,12 18,12',c.light));
+      add(20,11,3,13,c.badge);
+      add(44,20,12,15,line);add(46,23,8,10,c.dark);
+      add(47,26,6,3,c.light);
+      add(11,37,10,4,c.trim);
     }
     // Boots, gait is directional and comes from the same clock as the engine.
     const lLeg = sitting ? 0 : stride, rLeg = sitting ? 0 : -stride;
@@ -133,6 +166,10 @@ const MRLNCrewArt = (() => {
     if (c.kit === 'prism') {o.push(poly('32,14 27,19 37,19',c.light));add(31,15,2,2,metal);}
     if (c.kit === 'scribe') {add(28,17,8,2,c.badge);add(29,15,6,2,trim);}
     if (c.kit === 'antenna') {add(30,15,4,3,c.badge);add(31,16,2,1,metal);}
+    if (c.kit === 'ledger') {add(26,15,12,3,c.badge);add(30,16,4,1,metal);}
+    if (c.kit === 'artist') {add(27,15,10,3,c.badge);add(29,16,6,1,c.light);}
+    if (c.kit === 'judge') {o.push(poly('32,11 27,16 32,20 37,16',c.badge));add(31,14,2,3,metal);}
+    if (c.kit === 'beacon') {add(28,15,8,3,c.light);add(31,14,2,5,c.badge);}
     // These additions change outlines and equipment silhouettes, not only suit colors.
     if (c.variant === 'vanguard') {
       add(10,28,6,19,line);add(11,29,4,13,c.trim);

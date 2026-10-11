@@ -11,6 +11,8 @@ const install = read('INSTALL.md');
 const readme = read('README.md');
 const download = read('docs/DOWNLOAD_PAGE.md');
 const runbook = read('docs/RELEASE_RUNBOOK.md');
+const tauri = JSON.parse(read('src-tauri/tauri.conf.json'));
+const isMrlnFork = tauri.identifier === 'com.mrln.agentstation';
 const hostVerifier = read('scripts/verify-update-host.mjs');
 const website = [
   read('website/index.html'),
@@ -28,8 +30,23 @@ assert.doesNotMatch(buildMatrix[0], /target: linux/,
 
 assert.match(install, /Linux is not[\s\S]{0,80}supported release target/i,
   'install guide says Linux is not a supported public target');
-assert.match(readme, /pipeline requirements, not proof/i,
-  'README distinguishes workflow requirements from installed evidence');
+if (isMrlnFork) {
+  // MRLN currently ships an INTERNAL Windows CI installer. It must not
+  // impersonate the signed Windows+macOS StarNet release train or its downloads.
+  assert.match(readme, /Windows test builds \(GitHub Actions\)/,
+    'MRLN README links only to its own internal Windows test builds');
+  assert.match(readme, /installer build passing does not alone prove/i,
+    'MRLN README distinguishes installer compilation from installed launch proof');
+  assert.match(readme, /internal test use only/i,
+    'MRLN README explicitly discloses test-only release status');
+  assert.match(readme, /inherited StarNet graphical assets/i,
+    'MRLN README discloses uncleared upstream artwork');
+  assert.doesNotMatch(readme, /\[Download\]\(https:\/\/github\.com\/androoAGI\/starnet-releases/i,
+    'MRLN README does not send users to StarNet installers');
+} else {
+  assert.match(readme, /pipeline requirements, not proof/i,
+    'upstream README distinguishes workflow requirements from installed evidence');
+}
 assert.match(install, /release-pipeline requirements[\s\S]{0,180}not installed proof/i,
   'install guide does not turn release workflow code into installed proof');
 assert.match(download, /pipeline contract, not installed proof/i,
@@ -68,8 +85,10 @@ const closedChipList = /\bM1\s*(?:[–-]|\/\s*M2\s*\/\s*M3\s*\/)\s*M4\b|\bM1 \/ 
 for (const [name, source] of Object.entries({ readme, install, download, website, desktopBuild, searchIndex })) {
   assert.doesNotMatch(source, closedChipList, name + ' must not hard-code a closed Apple Silicon chip list');
 }
-for (const [name, source] of Object.entries({ readme, install, download, website })) {
-  assert.match(source, /Apple Silicon[\s\S]{0,60}M1 or later/, name + ' describes Apple Silicon as M1 or later');
+for (const [name, source] of Object.entries(isMrlnFork
+  ? { install, download, website }
+  : { readme, install, download, website })) {
+  assert.match(source, /Apple Silicon[\s\S]{0,60}M1 or later/, name + ' describes supported Apple Silicon as M1 or later');
 }
 
 console.log('release contract docs tests passed');
